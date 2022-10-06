@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="src/css/main.css">
+    <script type="module" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+    <script type="module" src="src/js/script.js"></script>
+    <title>Vocabank</title>
+</head>
+
+<body>
+    <div class="js-app">
+        <header class="js-header">
+            <nav class="pl-5 navbar fixed-top navbar-expand-lg navbar-dark bg-primary justify-content-between">
+                <a class="navbar-brand pl-5 ml-5" href="/">V o c a b a n k</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <ul class="js-user navbar-nav ml-auto pl-5">
+                        <!-- <li class="nav-item mr-5">
+                            <a class="nav-link js-login" href="#">Đăng nhập</a>
+                        </li> -->
+                        <!-- <li class="nav-item dropdown mr-5">
+                            <a class="   dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Hoàng Trung Sang
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item js-user-info" href="#">Trang cá nhân</a>
+                                <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item js-logout" href="#">Đăng xuất</a>
+                            </div>
+                        </li> -->
+                    </ul>
+                    <!-- <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form> -->
+                </div>
+            </nav>
+        </header>
+        <div class="content js-content">
+            <div class="row">
+
+                <div class="js-main col-xl-8 col-sm-8 col-lg-8">
+                    <div class="row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <div class="card">
+                                <a href="#" class="js-game-1">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Trò chơi 1</h5>
+                                        <p class="card-text">Nhập số lượt từ bạn muốn kiểm tra. Bạn sẽ được cung cấp số
+                                            lượt
+                                            gợi
+                                            ý cũng như số mạng sống sót tùy vào số lượt mà bạn đã nhập.</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <div class="card mt-3">
+                                <a href="#" class="js-game-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Trò chơi 2</h5>
+                                        <p class="card-text">Èo éo èo éo èo éo</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="js-account border-left col-xl-4 col-sm-4 col-lg-4">
+                    <h2 class="text-primary">Chào mừng bạn đến với <br>Vocabank</h2>
+                    <!-- <form class="js-form-login">
+                        <h3 class="mb-3">Đăng nhập</h3>
+                        <div class="form-group">
+                            <label for="inputLoginEmail">Email</label>
+                            <input type="text" class="form-control" id="inputLoginEmail"
+                                aria-describedby="inputLoginEmailHelp" placeholder="Địa chỉ email..."
+                                autocomplete="off">
+                            <div class="invalid-feedback">
+                                Trường này phải nhập một email.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputLoginPassWord">Mật khẩu</label>
+                            <input type="password" class="form-control" id="inputLoginPassWord"
+                                placeholder="Mật khẩu...">
+                            <div class="invalid-feedback">
+                                Mật khẩu cần ít nhất 6 ký tự.
+                            </div>
+                        </div>
+                        <p class="text-secondary">Quên mật khẩu?
+                            <a href="#" class="text-dark js-forgot-password">Click here</a>
+                        </p>
+                        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                    </form> -->
+                    <!-- <form class="js-form-signup">
+                        <h3 class="mb-3">Đăng ký tài khoản</h3>
+                        <div class="form-group">
+                            <label for="inputSignupEmail">Email</label>
+                            <input type="text" class="form-control" id="inputSignupEmail"
+                                aria-describedby="inputSignupEmailHelp" placeholder="Địa chỉ email..."
+                                autocomplete="off">
+                            <div class="invalid-feedback">
+                                Trường này phải nhập một email.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputSignupUsername">Họ và Tên</label>
+                            <input type="text" class="form-control" id="inputSignupUsername"
+                                aria-describedby="inputSignupUsernameHelp" placeholder="Họ và tên của bạn..."
+                                autocomplete="off">
+                            <div class="invalid-feedback">
+                                Trường này nhập ít nhất 4 ký tự, tối đa 30 kí tự.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputLoginPassWord">Mật khẩu</label>
+                            <input type="password" class="form-control" id="inputLoginPassWord"
+                                placeholder="Mật khẩu...">
+                            <div class="invalid-feedback">
+                                Mật khẩu nhập ít nhất 6 ký tự.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputLoginPassWord">Xác nhận mật khẩu</label>
+                            <input type="password" class="form-control" id="inputLoginPassWord"
+                                placeholder="Xác nhận mật khẩu...">
+                            <div class="invalid-feedback">
+                                Mật khẩu không trùng khớp.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
+                    </form> -->
+                    <!-- <div class="js-login-options">
+                        <h3 class="mb-3">Lựa chọn đăng nhập</h3>
+                        <button type="button" class="btn btn-outline-secondary btn-block js-btn-login-email">Đăng nhập với
+                            email</button>
+                        <button type="button" class="btn btn-outline-primary btn-block js-btn-login-facebook">Đăng nhập với
+                            Facebook</button>
+                        <button type="button" class="btn btn-outline-danger btn-block js-btn-login-google">Đăng nhập với
+                            Google</button>
+                    </div> -->
+
+
+                    <!-- <table class="table table-striped js-list-word-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Stt</th>
+                                <th scope="col">Từ</th>
+                                <th scope="col">Nghĩa</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>
+                                    <div class="form-group mb-0">
+                                        <input type="text" class="form-control is-invalid" autocomplete="off">
+                                        <div class="invalid-feedback">
+                                            Từ này đã tồn tại.
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group mb-0">
+                                        <input type="text" class="form-control" autocomplete="off">
+                                        <div class="invalid-feedback">
+                                            Tối đa 50 ký tự.
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-primary">Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>
+                                    <button class="btn btn-outline-primary">Xóa</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>
+                                    <button class="btn btn-outline-primary">Xóa</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table> -->
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="timeTestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">V o c a b a n k</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" class="js-form-time-test">
+                            <div class="form-group">
+                                <label for="inputTimeTest">Số lượt từ bạn muốn kiểm tra:</label>
+                                <input type="text" class="form-control" id="inputTimeTest"
+                                    aria-describedby="timeTestHelp" placeholder="Enter a positive integer number..."
+                                    autocomplete="off">
+                                <small id="timeTestHelp" class="form-text text-danger"></small>
+                            </div>
+                            <button hidden type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

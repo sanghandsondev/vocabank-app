@@ -1,0 +1,21 @@
+{
+  "name": "myvocab-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --dist-dir ./dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.7.0",
+    "@types/core-js": "^2.5.5",
+    "parcel": "^2.7.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "core-js": "^3.25.4",
+    "regenerator-runtime": "^0.13.9"
+  }
+}
