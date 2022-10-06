@@ -1,6 +1,6 @@
 import 'core-js/stable'                     // polyfilling everything else
 import '@babel/polyfill'
-import 'regenerator-runtime/runtime'        // polyfilling async/await
+// import 'regenerator-runtime/runtime'        // polyfilling async/await
 import { TIME_LIVE_GAME_1, TIME_SUGGEST_GAME_1 } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout } from './auth'
