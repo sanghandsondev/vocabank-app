@@ -20,4 +20,5 @@
 .game-intro:hover {
     border: 2px solid #ccc;
     user-select: none;
+    cursor: pointer;
 }
