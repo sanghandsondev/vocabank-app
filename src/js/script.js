@@ -4,6 +4,8 @@ import '@babel/polyfill'
 import { TIME_LIVE_GAME_1, TIME_SUGGEST_GAME_1 } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout } from './auth'
+import { toastShow } from './custom'
+import { async } from 'regenerator-runtime'
 
 const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -106,7 +108,11 @@ const updateWordToLocalStorage = (newWord, id) => {
 
 // HANDLE EVENT - Initial Load
 if (btnGame1) {
-    btnGame1.addEventListener('click', () => {
+    btnGame1.addEventListener('click', async () => {
+        if (!g_user) return
+        await getListWordFromLocalStorage()
+        g_timeSuggest = TIME_SUGGEST_GAME_1
+        g_timeLive = TIME_LIVE_GAME_1
         renderGame1()
     })
 }
@@ -115,7 +121,7 @@ if (btnGame1) {
 const renderGame1 = () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    renderView(mainEl, game1Markup())
+    renderView(mainEl, game1Markup(g_listWord))
     // add handler here for game 1 view
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm()
@@ -183,7 +189,9 @@ const renderSearchListWordTable = () => {
 }
 
 //------------------------ MARKUP -------------------------------
-const game1Markup = () => {
+const game1Markup = (list) => {
+    const length = list.length
+    const random = Math.floor(Math.random() * length)
     return `
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
             Bắt đầu trò chơi
@@ -197,12 +205,12 @@ const game1Markup = () => {
 
             <button type="button" class="btn btn-outline-primary ml-5 js-time-live-display" disabled>
                 Lượt gợi ý còn lại:
-                <span class="text-dark">${TIME_SUGGEST_GAME_1}</span>
+                <span class="text-dark">${g_timeSuggest}</span>
             </button>
 
             <button type="button" class="btn btn-outline-primary ml-5 js-time-suggest-display" disabled>
                 Số mạng còn lại của bạn:
-                <span class="text-dark">${TIME_LIVE_GAME_1}</span>
+                <span class="text-dark">${g_timeLive}</span>
             </button>
 
             <form class="js-form-check-answer mt-3">
@@ -212,11 +220,17 @@ const game1Markup = () => {
                 </div>
                 <div class="form-group">
                     <label for="inputMeaningGame1">Nghĩa</label>
-                    <input type="text" class="form-control" id="inputMeaningGame1" disabled value="bố và mẹ">
+                    <input type="text" class="form-control" id="inputMeaningGame1" disabled value="${list[random].meaning}">
                 </div>
-                <button type="submit" class="btn btn-primary">Kiểm tra đáp án</button>
+                <button id=${random} type="submit" class="btn btn-primary">Kiểm tra đáp án</button>
             </form>
-            
+
+            <button type="button" class="btn btn-outline-info mt-3 js-btn-suggest-first-char">
+                Gợi ý chữ cái đầu
+            </button>
+            <button type="button" class="btn btn-outline-info ml-3 mt-3 js-btn-suggest">
+                Gợi ý từ
+            </button>
         </div>
 
     `
@@ -340,13 +354,15 @@ const userDisplayMarkup = () => {
 const listWordTableMarkup = (list) => {
     // resultSearchListWord(input)
     const markup = list.map((el, index) => {
+
         return `
         <tr id="${el.id}">
             <th scope="row">    
                 ${el.word}
             </th>
             <td>
-                ${el.meaning}
+                ${el.meaning = el.meaning.length > 20 ? el.meaning.slice(0, 20) + "..." : el.meaning}
+            
             </td>
             <td>
                 <button type="button" class="btn btn-outline-danger btn-sm js-btn-remove-word"
@@ -363,6 +379,7 @@ const listWordTableMarkup = (list) => {
             <button type="button" class="btn btn-outline-info js-btn-add-word">Thêm</button>
         </div>
     </div>
+    
 
     <table class="table table-sm table-striped js-list-word-table">
         <thead>
@@ -400,7 +417,7 @@ const updateListWordMarkup = (list) => {
                 ${el.word}
             </th>
             <td>
-                ${el.meaning}
+            ${el.meaning = el.meaning.length > 20 ? el.meaning.slice(0, 20) + "..." : el.meaning}
             </td>
             <td>
             <button type="button" class="btn btn-outline-danger btn-sm js-btn-remove-word"
@@ -531,8 +548,8 @@ const addHandlerRenderAddWordInput = () => {
             </td>
             <td>
                 <div class="form-group mb-0">
-                    <input type="text" id= "inputAddMeaning" class="form-control" 
-                        autocomplete="off" aria-describedby="inputAddMeaningHelp">
+                    <textarea id= "inputAddMeaning" class="form-control" 
+                        autocomplete="off" aria-describedby="inputAddMeaningHelp" rows="1"></textarea>
                     <div class="invalid-feedback">
                         Tối đa 50 ký tự.
                     </div>
@@ -574,9 +591,9 @@ const addHandlerAddWord = () => {
         
         <tr>
             <th scope="row">${newWord.word}</th>
-            <td>${newWord.meaning}</td>
+            <td>${newWord.meaning = newWord.meaning.length > 20 ? newWord.meaning.slice(0, 20) + "..." : newWord.meaning}</td>
             <td>
-                <button type="button" class="btn btn-success btn-sm">New</button>
+                <button type="button" class="btn btn-outline-success btn-sm">New</button>
             </td>
         </tr>
         `
@@ -645,61 +662,131 @@ const addHandlerRenderEditWordInput = () => {
                     removeWordToLocalStorage(id)
                     $('#confirmRemoveWordModal').modal('hide')
                     word.classList.add('hidden')
+                })
+                return
+            }
+            // Update Word
+            let currentWord = findWordById(id)
+            let initWord = currentWord.word
+            let initMeaning = currentWord.meaning
+            const markup = `
+            <tr>
+                <td>
+                    <div class="form-group mb-0">
+                        <input type="text" id= "inputEditWord" class="form-control" 
+                            autocomplete="off" aria-describedby="inputEditWordHelp"
+                            value="${initWord}" >
+                        <div class="invalid-feedback">
+                            Từ này đã tồn tại.
+                        </div>
+                        <small id="inputEditWordHelp" class="form-text text-danger">
+                        </small>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group mb-0">
+                        <textarea id= "inputEditMeaning" class="form-control" 
+                            autocomplete="off" aria-describedby="inputEditMeaningHelp"
+                            >${initMeaning}</textarea>
+                        <div class="invalid-feedback">
+                            Tối đa 50 ký tự.
+                        </div>
+                        <small id="inputEditMeaningHelp" class="form-text text-danger">
+                        </small>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-outline-info js-btn-confirm-edit-word">Lưu</button>
+                </td>
+            </tr>
+            `
+            word.outerHTML = markup
+
+            const inputEditWord = document.querySelector('#inputEditWord')
+            const inputEditMeaning = document.querySelector('#inputEditMeaning')
+            inputEditWord.setSelectionRange(initWord.length, initWord.length)
+            inputEditWord.focus()
+            inputEditWord.classList.add('is-valid')
+            inputEditMeaning.classList.add('is-valid')
+
+            inputEditWord.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toLowerCase()
+                const newWord = e.target.value.trim()
+                if (!newWord) {
+                    document.querySelector('#inputEditWordHelp').textContent = 'Trường này không được để trống.'
+                    inputEditWord.classList.remove('is-valid')
+                    return
+                }
+                document.querySelector('#inputEditWordHelp').textContent = ''
+                if (newWord !== initWord && !isWordUnique(newWord, g_listWord)) {
+                    inputEditWord.classList.remove('is-valid')
+                    inputEditWord.classList.add('is-invalid')
+                    return
+                }
+                inputEditWord.classList.remove('is-invalid')
+                inputEditWord.classList.add('is-valid')
+            })
+            inputEditWord.addEventListener('keypress', (e) => {
+                if (e.key === "Enter") {
+                    inputEditMeaning.setSelectionRange(initMeaning.length, initMeaning.length)
+                    inputEditMeaning.focus()
+                }
+            })
+
+            inputEditMeaning.addEventListener('input', (e) => {
+                const newMeaning = e.target.value.trim()
+                if (!newMeaning) {
+                    document.querySelector('#inputEditMeaningHelp').textContent = 'Trường này không được để trống.'
+                    inputEditMeaning.classList.remove('is-valid')
+                    return
+                }
+                document.querySelector('#inputEditMeaningHelp').textContent = ''
+                if (!existMaxChar(newMeaning, 50)) {
+                    inputEditMeaning.classList.remove('is-valid')
+                    inputEditMeaning.classList.add('is-invalid')
+                    return
+                }
+                inputEditMeaning.classList.remove('is-invalid')
+                inputEditMeaning.classList.add('is-valid')
+            })
+
+            document.querySelector('.js-btn-confirm-edit-word').addEventListener('click', async () => {
+                if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
+                    await updateWordToLocalStorage({ word: inputEditWord.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
+                    renderSearchListWordTable()
+                    return
+                }
+                // thông báo Cập nhật thất bại
+                renderListWordTable()
+                return
+            })
+            const anotherWord = document.querySelectorAll(`.js-list-word-table tbody tr[id]`)
+            for (let word2 of anotherWord) {
+                word2.addEventListener('click', () => {
+                    renderSearchListWordTable()
                     return
                 })
             }
-            // Update Word
-            const currentWord = findWordById(id)
-            console.log(currentWord)
-        })
 
+
+            // document.addEventListener('click', (e) => {
+            //     const targetEl = e.target.closest(`.js-list-word-table tbody tr[id="${id}"]`)
+            //     if (!targetEl) {
+            //         ren
+            //     }
+            //     if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
+            //         // updateWordToLocalStorage({ word: inputEditMeaning.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
+            //         // renderSearchListWordTable()
+            //         console.log("OK")
+            //         return
+            //     }
+            //     console.log("Hủy update")
+            //     // renderSearchListWordTable()
+            //     return
+            // })
+        })
     }
 }
-// const initWord = word.innerText
-//     const markupWord = `
-//     <td>
-//         <div class="form-group mb-0">
-//             <input type="text" id= "inputEditWord" class="form-control" 
-//                 autocomplete="off" aria-describedby="inputEditWordHelp"
-//                 value="${iniWord}" >
-//             <div class="invalid-feedback">
-//                 Từ này đã tồn tại/không đổi.
-//             </div>
-//             <small id="inputEditWordHelp" class="form-text text-danger">
-//             </small>
-//         </div>
-//     </td>
-//     `
-//     word.outerHTML = markupWord
-//     const inputEditWord = document.querySelector('#inputEditWord')
-//     inputEditWord.setSelectionRange(iniWord.length, iniWord.length);
-//     inputEditWord.focus()
-//     inputEditWord.addEventListener('input', (e) => {
-//         e.target.value = e.target.value.toLowerCase()
-//     })
-
-//     inputEditWord.addEventListener('blur', (e) => {
-//         const newWord = inputEditWord.value.trim()
-//         if (!newWord) {
-//             document.querySelector('#inputEditWordHelp').textContent = 'Bạn cần nhập trường này.'
-//             return
-//         }
-//         if (!isWordUnique(newWord, g_listWord)) {
-//             inputEditWord.classList.add('is-invalid')
-//             return
-//         }
-//         // Edit word success
-//         // updateWordToLocalStorage(newWord, id)
-//         inputEditWord.parentElement.parentElement.outerHTML = `
-//             <th scope="row">    
-//                 ${newWord}
-//             </th>
-//         `
-//         console.log(word.parentElement)
-
-//         })
-//     })
-
 
 // --------------------------- INIT -------------------------
 const init = async () => {

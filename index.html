@@ -18,10 +18,12 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script type="module" src="src/js/script.js"></script>
+    <link rel="shortcut icon" href="src/img/favicon.ico" type="image/x-icon" />
     <title>Vocabank</title>
 </head>
 
 <body>
+
     <div class="js-app">
         <header class="js-header">
             <nav class="pl-5 navbar fixed-top navbar-expand-lg navbar-dark bg-primary justify-content-between">
@@ -93,134 +95,24 @@
 
                 <div class="js-account border-left col-xl-4 col-sm-4 col-lg-4">
                     <h2 class="text-primary">Chào mừng bạn đến với <br>Vocabank</h2>
-                    <!-- <form class="js-form-login">
-                        <h3 class="mb-3">Đăng nhập</h3>
-                        <div class="form-group">
-                            <label for="inputLoginEmail">Email</label>
-                            <input type="text" class="form-control" id="inputLoginEmail"
-                                aria-describedby="inputLoginEmailHelp" placeholder="Địa chỉ email..."
-                                autocomplete="off">
-                            <div class="invalid-feedback">
-                                Trường này phải nhập một email.
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputLoginPassWord">Mật khẩu</label>
-                            <input type="password" class="form-control" id="inputLoginPassWord"
-                                placeholder="Mật khẩu...">
-                            <div class="invalid-feedback">
-                                Mật khẩu cần ít nhất 6 ký tự.
-                            </div>
-                        </div>
-                        <p class="text-secondary">Quên mật khẩu?
-                            <a href="#" class="text-dark js-forgot-password">Click here</a>
-                        </p>
-                        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
-                    </form> -->
-                    <!-- <form class="js-form-signup">
-                        <h3 class="mb-3">Đăng ký tài khoản</h3>
-                        <div class="form-group">
-                            <label for="inputSignupEmail">Email</label>
-                            <input type="text" class="form-control" id="inputSignupEmail"
-                                aria-describedby="inputSignupEmailHelp" placeholder="Địa chỉ email..."
-                                autocomplete="off">
-                            <div class="invalid-feedback">
-                                Trường này phải nhập một email.
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputSignupUsername">Họ và Tên</label>
-                            <input type="text" class="form-control" id="inputSignupUsername"
-                                aria-describedby="inputSignupUsernameHelp" placeholder="Họ và tên của bạn..."
-                                autocomplete="off">
-                            <div class="invalid-feedback">
-                                Trường này nhập ít nhất 4 ký tự, tối đa 30 kí tự.
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputLoginPassWord">Mật khẩu</label>
-                            <input type="password" class="form-control" id="inputLoginPassWord"
-                                placeholder="Mật khẩu...">
-                            <div class="invalid-feedback">
-                                Mật khẩu nhập ít nhất 6 ký tự.
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputLoginPassWord">Xác nhận mật khẩu</label>
-                            <input type="password" class="form-control" id="inputLoginPassWord"
-                                placeholder="Xác nhận mật khẩu...">
-                            <div class="invalid-feedback">
-                                Mật khẩu không trùng khớp.
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
-                    </form> -->
-                    <!-- <div class="js-login-options">
-                        <h3 class="mb-3">Lựa chọn đăng nhập</h3>
-                        <button type="button" class="btn btn-outline-secondary btn-block js-btn-login-email">Đăng nhập với
-                            email</button>
-                        <button type="button" class="btn btn-outline-primary btn-block js-btn-login-facebook">Đăng nhập với
-                            Facebook</button>
-                        <button type="button" class="btn btn-outline-danger btn-block js-btn-login-google">Đăng nhập với
-                            Google</button>
-                    </div> -->
-
-
-                    <!-- <table class="table table-striped js-list-word-table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Stt</th>
-                                <th scope="col">Từ</th>
-                                <th scope="col">Nghĩa</th>
-                                <th scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>
-                                    <div class="form-group mb-0">
-                                        <input type="text" class="form-control is-invalid" autocomplete="off">
-                                        <div class="invalid-feedback">
-                                            Từ này đã tồn tại.
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group mb-0">
-                                        <input type="text" class="form-control" autocomplete="off">
-                                        <div class="invalid-feedback">
-                                            Tối đa 50 ký tự.
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <button class="btn btn-outline-primary">Xóa</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>
-                                    <button class="btn btn-outline-primary">Xóa</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>Larry</td>
-                                <td>the Bird</td>
-                                <td>
-                                    <button class="btn btn-outline-primary">Xóa</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table> -->
 
                 </div>
             </div>
         </div>
+        <!-- alert toast -->
+        <!-- <div class="js-toast-update-success toast" role="alert" aria-live="assertive" aria-atomic="true"
+            data-delay="5000">
+            <div class="toast-header">
+                <strong class="mr-auto">Vocabank</strong>
+                <small>11 mins ago</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                Cập nhật thành công.
+            </div>
+        </div> -->
 
         <!-- Modal -->
 
