@@ -1,12 +1,23 @@
+* {
+    box-sizing: border-box;
+}
+
 .hidden {
     display: none;
 }
-
-
 
 /* HEADER */
 
 
 .content {
     margin: 80px 2rem 0 9rem;
+}
+
+.game-intro {
+    border: 2px solid white;
+}
+
+.game-intro:hover {
+    border: 2px solid #ccc;
+    user-select: none;
 }

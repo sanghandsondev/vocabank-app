@@ -637,18 +637,20 @@ const addHandlerRenderEditWordInput = () => {
         word.addEventListener('click', (e) => {
             let id = Number(word.getAttribute('id'))
             btnRemoveWord = e.target.closest('.js-btn-remove-word')
-            if (btnRemoveWord) {
-                // Remove Word
-                document.querySelector('.js-btn-confirm-remove-word').addEventListener('click', (e) => {
-                    removeWordToLocalStorage(id)
-                    $('#confirmRemoveWordModal').modal('hide')
-                    word.classList.add('hidden')
-                    return
-                })
-            }
-            // Update Word
-            const currentWord = findWordById(id)
-            console.log(currentWord)
+            console.log(id)
+            console.log(btnRemoveWord)
+            // if (btnRemoveWord) {
+            //     // Remove Word
+            //     document.querySelector('.js-btn-confirm-remove-word').addEventListener('click', (e) => {
+            //         removeWordToLocalStorage(id)
+            //         $('#confirmRemoveWordModal').modal('hide')
+            //         word.classList.add('hidden')
+            //         return
+            //     })
+            // }
+            // // Update Word
+            // const currentWord = findWordById(id)
+            // console.log(currentWord)
         })
 
     }
