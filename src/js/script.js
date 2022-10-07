@@ -548,3 +548,4 @@ const init = async () => {
     // await getListWord()   
 }
 init()
+localStorage.removeItem('items')
