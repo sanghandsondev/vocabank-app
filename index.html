@@ -223,12 +223,13 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="timeTestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+
+        <div class="modal fade" id="timeTestModal" tabindex="-1" role="dialog" aria-labelledby="timeTestModalLabel"
             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">V o c a b a n k</h5>
+                        <h5 class="modal-title" id="timeTestModalLabel">V o c a b a n k</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -244,6 +245,28 @@
                             </div>
                             <button hidden type="submit" class="btn btn-primary">Submit</button>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmRemoveWordModal" tabindex="-1" role="dialog"
+            aria-labelledby="confirmRemoveWordModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmRemoveWordModalLabel">V o c a b a n k</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Xác nhận xóa từ vừa chọn?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-outline-warning js-btn-confirm-remove-word">Xác
+                            nhận</button>
                     </div>
                 </div>
             </div>

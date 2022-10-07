@@ -15,10 +15,11 @@ const userEl = document.querySelector('.js-user')
 
 
 // LOCAL MODAL STATE
-
 let g_listWord = []
 let g_user
 let g_timeTest
+let g_timeSuggest
+let g_timeLive
 
 const getListWordFromLocalStorage = async () => {
     const list = await localStorage.getItem('listword')
@@ -54,8 +55,19 @@ const renderView = (parentElement, markup) => {
     parentElement.insertAdjacentHTML('afterbegin', markup)
 }
 
+const updateViewData = (parentElement, markup) => {
+
+}
+
+// Data
 const persistListWordLocalStorage = () => {
     localStorage.setItem('listword', JSON.stringify(g_listWord))
+}
+
+const findWordById = (id) => {
+    return g_listWord.find((el) => {
+        return el.id === id
+    })
 }
 
 const addWordToLocalStorage = (data) => {
@@ -75,18 +87,31 @@ const resultSearchListWord = (input) => {
     })
 }
 
-// HANDLE EVENT - Initial Load
+const removeWordToLocalStorage = (id) => {
+    const word = findWordById(id)
+    if (!word) return
+    const index = g_listWord.indexOf(word)
+    g_listWord.splice(index, 1)
+    persistListWordLocalStorage()
+}
 
+const updateWordToLocalStorage = (newWord, id) => {
+    const word = findWordById(id)
+    if (!word) return
+    const index = g_listWord.indexOf(word)
+    g_listWord[index].word = newWord.word
+    g_listWord[index].meaning = newWord.meaning
+    persistListWordLocalStorage()
+}
+
+// HANDLE EVENT - Initial Load
 if (btnGame1) {
     btnGame1.addEventListener('click', () => {
         renderGame1()
     })
 }
 
-
-
-// RENDER VIEW
-
+// ----------------------- RENDER VIEW-----------------------------
 const renderGame1 = () => {
     clear(mainEl)
     renderSpinner(mainEl)
@@ -140,12 +165,24 @@ const renderListWordTable = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
     await getListWordFromLocalStorage()
-    await renderView(accountEl, listWordTableMarkup(g_listWord))
+    renderView(accountEl, listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
+    addHandlerInputSearchWord()
+    addHandlerRenderEditWordInput()
 }
 
-// MARKUP
+const renderSearchListWordTable = () => {
+    const listword = document.querySelector('.js-list-word-table')
+    const inputSearch = document.querySelector('#inputSearchWord')
+    clear(listword)
+    renderSpinner(listword)
+    renderView(listword, updateListWordMarkup(resultSearchListWord(inputSearch.value)))
+    // add handler
+    addHandlerRenderEditWordInput()
+}
+
+//------------------------ MARKUP -------------------------------
 const game1Markup = () => {
     return `
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
@@ -304,10 +341,17 @@ const listWordTableMarkup = (list) => {
     // resultSearchListWord(input)
     const markup = list.map((el, index) => {
         return `
-        <tr>
-            <th scope="row">${el.word}</th>
-            <td>${el.meaning}</td>
-            <td></td>
+        <tr id="${el.id}">
+            <th scope="row">    
+                ${el.word}
+            </th>
+            <td>
+                ${el.meaning}
+            </td>
+            <td>
+                <button type="button" class="btn btn-outline-danger btn-sm js-btn-remove-word"
+                    data-toggle="modal" data-target="#confirmRemoveWordModal">Xóa</button>
+            </td>
         </tr>  
         `
     }).join('')
@@ -334,7 +378,52 @@ const listWordTableMarkup = (list) => {
     </table>
     `
 }
-// ADD HANDLER
+
+const updateListWordMarkup = (list) => {
+    if (list.length === 0) return `
+        <thead>
+                <tr>
+                    <th scope="col">Từ</th>
+                    <th scope="col">Nghĩa</th>
+                    <th scope="col"></th>
+                </tr>
+        </thead>
+        <p class="text-info mt-3"> Không tìm thấy kết quả </p>
+        <tbody>
+           
+        </tbody>
+    `
+    const markup = list.map((el, index) => {
+        return `
+        <tr id="${el.id}">
+            <th scope="row">    
+                ${el.word}
+            </th>
+            <td>
+                ${el.meaning}
+            </td>
+            <td>
+            <button type="button" class="btn btn-outline-danger btn-sm js-btn-remove-word"
+                data-toggle="modal" data-target="#confirmRemoveWordModal">Xóa</button>
+            </td>
+        </tr>    
+        `
+    }).join('')
+    return `
+        <thead>
+            <tr>
+                <th scope="col">Từ</th>
+                <th scope="col">Nghĩa</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            ${markup}
+        </tbody>
+    `
+}
+
+// ------------------------- ADD HANDLER -------------------------------
 // Game 1
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
@@ -455,10 +544,6 @@ const addHandlerRenderAddWordInput = () => {
             </td>
         </tr>
         `
-        //     < input type = "text" class="form-control" id = "inputTimeTest"
-        // aria - describedby="timeTestHelp" placeholder = "Enter a positive integer number..."
-        // autocomplete = "off" >
-        //     <small id="timeTestHelp" class="form-text text-danger"></small>
         if (btn.textContent === "Hủy") {
             btn.textContent = "Thêm"
             // tbody.querySelector(':first-child').outerHTML = ''
@@ -470,13 +555,14 @@ const addHandlerRenderAddWordInput = () => {
         tbody.insertAdjacentHTML('afterbegin', markup)
         tbody.querySelector('#inputAddWord').focus()
         document.querySelector('#inputSearchWord').setAttribute('disabled', 'true')
+        // Add Handler
         addHandlerAddWord()
     })
 
 }
 
 const addHandlerAddWord = () => {
-    const handleAddWordSuccess = (data) => {
+    const handleAddWordSuccess = (newWord) => {
         document.querySelector('#inputAddWord').value = ''
         document.querySelector('#inputAddWord').focus()
         document.querySelector('#inputAddMeaning').value = ''
@@ -485,13 +571,17 @@ const addHandlerAddWord = () => {
         document.querySelector('#inputAddWord').classList.remove('is-invalid')
         document.querySelector('#inputAddMeaning').classList.remove('is-invalid')
         const markup = `
+        
         <tr>
-            <th scope="row">${data.word}</th>
-            <td>${data.meaning}</td>
-            <td></td>
+            <th scope="row">${newWord.word}</th>
+            <td>${newWord.meaning}</td>
+            <td>
+                <button type="button" class="btn btn-success btn-sm">New</button>
+            </td>
         </tr>
         `
-        document.querySelector('.js-list-word-table tbody').insertAdjacentHTML('beforeend', markup)
+        // console.log(document.querySelector('.js-list-word-table tbody').firstElementChild)
+        document.querySelector('.js-list-word-table tbody').firstElementChild.insertAdjacentHTML('afterend', markup)
     }
     const handleAddWord = () => {
         const word = document.querySelector('#inputAddWord').value.trim()
@@ -529,15 +619,87 @@ const addHandlerAddWord = () => {
             document.querySelector('#inputAddMeaning').focus()
         }
     })
+    document.querySelector('#inputAddWord').addEventListener('input', (e) => {
+        e.target.value = e.target.value.toLowerCase()
+    })
 }
 
-// const addHandlerInputSearchWord = () => {
-//     document.querySelector('#inputSearchWord').addEventListener('input', (e) => {
-//         renderListWordTable()
-//     })
-// }
+const addHandlerInputSearchWord = () => {
+    document.querySelector('#inputSearchWord').addEventListener('input', (e) => {
+        e.target.value = e.target.value.toLowerCase()
+        renderSearchListWordTable()
+    })
+}
 
-// INIT
+const addHandlerRenderEditWordInput = () => {
+    const listWord = document.querySelectorAll('.js-list-word-table tbody tr[id]')
+    for (let word of listWord) {
+        word.addEventListener('click', (e) => {
+            let id = Number(word.getAttribute('id'))
+            btnRemoveWord = e.target.closest('.js-btn-remove-word')
+            if (btnRemoveWord) {
+                // Remove Word
+                document.querySelector('.js-btn-confirm-remove-word').addEventListener('click', (e) => {
+                    removeWordToLocalStorage(id)
+                    $('#confirmRemoveWordModal').modal('hide')
+                    word.classList.add('hidden')
+                    return
+                })
+            }
+            // Update Word
+            const currentWord = findWordById(id)
+            console.log(currentWord)
+        })
+
+    }
+}
+// const initWord = word.innerText
+//     const markupWord = `
+//     <td>
+//         <div class="form-group mb-0">
+//             <input type="text" id= "inputEditWord" class="form-control" 
+//                 autocomplete="off" aria-describedby="inputEditWordHelp"
+//                 value="${iniWord}" >
+//             <div class="invalid-feedback">
+//                 Từ này đã tồn tại/không đổi.
+//             </div>
+//             <small id="inputEditWordHelp" class="form-text text-danger">
+//             </small>
+//         </div>
+//     </td>
+//     `
+//     word.outerHTML = markupWord
+//     const inputEditWord = document.querySelector('#inputEditWord')
+//     inputEditWord.setSelectionRange(iniWord.length, iniWord.length);
+//     inputEditWord.focus()
+//     inputEditWord.addEventListener('input', (e) => {
+//         e.target.value = e.target.value.toLowerCase()
+//     })
+
+//     inputEditWord.addEventListener('blur', (e) => {
+//         const newWord = inputEditWord.value.trim()
+//         if (!newWord) {
+//             document.querySelector('#inputEditWordHelp').textContent = 'Bạn cần nhập trường này.'
+//             return
+//         }
+//         if (!isWordUnique(newWord, g_listWord)) {
+//             inputEditWord.classList.add('is-invalid')
+//             return
+//         }
+//         // Edit word success
+//         // updateWordToLocalStorage(newWord, id)
+//         inputEditWord.parentElement.parentElement.outerHTML = `
+//             <th scope="row">    
+//                 ${newWord}
+//             </th>
+//         `
+//         console.log(word.parentElement)
+
+//         })
+//     })
+
+
+// --------------------------- INIT -------------------------
 const init = async () => {
     await getUserFromLocalStorage()
     if (!g_user) {
@@ -548,4 +710,3 @@ const init = async () => {
     // await getListWord()   
 }
 init()
-localStorage.removeItem('items')
