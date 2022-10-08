@@ -4,8 +4,7 @@ import '@babel/polyfill'
 import { TIME_LIVE_GAME_1, TIME_SUGGEST_GAME_1 } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout } from './auth'
-import { toastShow } from './custom'
-import { async } from 'regenerator-runtime'
+import { showToast } from './custom'
 
 const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -22,6 +21,7 @@ let g_user
 let g_timeTest
 let g_timeSuggest
 let g_timeLive
+let g_timeOut
 
 const getListWordFromLocalStorage = async () => {
     const list = await localStorage.getItem('listword')
@@ -109,10 +109,11 @@ const updateWordToLocalStorage = (newWord, id) => {
 // HANDLE EVENT - Initial Load
 if (btnGame1) {
     btnGame1.addEventListener('click', async () => {
-        if (!g_user) return
+        if (!g_user) {
+            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+            return
+        }
         await getListWordFromLocalStorage()
-        g_timeSuggest = TIME_SUGGEST_GAME_1
-        g_timeLive = TIME_LIVE_GAME_1
         renderGame1()
     })
 }
@@ -121,11 +122,22 @@ if (btnGame1) {
 const renderGame1 = () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    renderView(mainEl, game1Markup(g_listWord))
+    renderView(mainEl, game1Markup())
     // add handler here for game 1 view
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm()
+}
+
+const renderGame1Content = () => {
+    const contentEl = document.querySelector('.js-game1-content')
+    clear(contentEl)
+    renderSpinner(contentEl)
+    renderView(contentEl, game1ContentMarkup(g_listWord))
+    //add handler
+    addHandlerInputWordGame1()
     addHandlerSubmitCheckAnswerForm()
+    addHandlerSuggestFirstChar()
+    addHandlerSuggestWord()
 }
 
 const renderOptionLogin = () => {
@@ -189,50 +201,66 @@ const renderSearchListWordTable = () => {
 }
 
 //------------------------ MARKUP -------------------------------
-const game1Markup = (list) => {
-    const length = list.length
-    const random = Math.floor(Math.random() * length)
+const game1Markup = () => {
+
+    g_timeSuggest = TIME_SUGGEST_GAME_1
+    g_timeLive = TIME_LIVE_GAME_1
     return `
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
             Bắt đầu trò chơi
         </button>
         
-        <div class="js-game-1 hidden"> 
+        <div class="js-time-game1 hidden"> 
             <button type="button" class="btn btn-outline-primary js-time-test-display" disabled>
                 Luợt kiểm tra:
-                <span class="text-dark"></span>
-            </button>
-
-            <button type="button" class="btn btn-outline-primary ml-5 js-time-live-display" disabled>
-                Lượt gợi ý còn lại:
-                <span class="text-dark">${g_timeSuggest}</span>
+                <span class="text-dark font-weight-bold"></span>
             </button>
 
             <button type="button" class="btn btn-outline-primary ml-5 js-time-suggest-display" disabled>
+                Lượt gợi ý còn lại:
+                <span class="text-dark font-weight-bold">${g_timeSuggest}</span>
+            </button>
+
+            <button type="button" class="btn btn-outline-primary ml-5 js-time-live-display" disabled>
                 Số mạng còn lại của bạn:
-                <span class="text-dark">${g_timeLive}</span>
-            </button>
-
-            <form class="js-form-check-answer mt-3">
-                <div class="form-group">
-                    <label for="inputWordGame1">Từ</label>
-                    <input type="text" class="form-control" id="inputWordGame1" placeholder="Nhập từ..." autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label for="inputMeaningGame1">Nghĩa</label>
-                    <input type="text" class="form-control" id="inputMeaningGame1" disabled value="${list[random].meaning}">
-                </div>
-                <button id=${random} type="submit" class="btn btn-primary">Kiểm tra đáp án</button>
-            </form>
-
-            <button type="button" class="btn btn-outline-info mt-3 js-btn-suggest-first-char">
-                Gợi ý chữ cái đầu
-            </button>
-            <button type="button" class="btn btn-outline-info ml-3 mt-3 js-btn-suggest">
-                Gợi ý từ
+                <span class="text-dark font-weight-bold">${g_timeLive}</span>
             </button>
         </div>
+        <div class="js-game1-content">
+            
+        </div>
 
+    `
+}
+
+const game1ContentMarkup = (list) => {
+    const length = list.length
+    const random = Math.floor(Math.random() * length)
+    return `
+        <form class="js-form-check-answer-game1">
+            <div class="form-group">
+                <label for="inputWordGame1">Từ</label>
+                <input type="text" class="form-control" id="inputWordGame1" placeholder="Nhập từ..." autocomplete="off">
+                <div class="invalid-feedback">
+                    Đáp án không đúng.
+                </div>
+                
+            </div>
+            <div class="form-group">
+                <label for="inputMeaningGame1">Nghĩa</label>
+                <input type="text" class="form-control" id="inputMeaningGame1" disabled value="${list[random].meaning}">
+            </div>
+            <button id="${random}" type="submit" class="btn btn-primary js-btn-check-answer">Kiểm tra đáp án</button>
+        </form>
+
+        <button type="button" class="btn btn-outline-info mt-3 
+            js-btn-suggest-first-char" data-index=${random}>
+            Gợi ý chữ cái đầu
+        </button>
+        <button type="button" class="btn btn-outline-info ml-3 mt-3 
+            js-btn-suggest" data-index=${random}>
+            Gợi ý từ
+        </button>
     `
 }
 
@@ -466,19 +494,116 @@ const addHandlerSubmitTimeTestForm = () => {
         }
         g_timeTest = timeTest
         $('#timeTestModal').modal('hide')
-        document.querySelector('.js-game-1').classList.toggle('hidden')
-        document.querySelector('.js-btn-start-game').classList.toggle('hidden')
+        document.querySelector('.js-time-game1').classList.remove('hidden')
+        document.querySelector('.js-btn-start-game').classList.add('hidden')
         document.querySelector('.js-time-test-display span').textContent = g_timeTest
+        renderGame1Content()
         document.querySelector('#inputWordGame1').focus()
     })
 }
 
-const addHandlerSubmitCheckAnswerForm = () => {
-    document.querySelector('.js-form-check-answer').addEventListener('submit', (e) => {
-        // e.preventDefault()
+const addHandlerInputWordGame1 = () => {
+    document.querySelector('#inputWordGame1').addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
     })
 }
 
+const addHandlerSubmitCheckAnswerForm = () => {
+    document.querySelector('.js-form-check-answer-game1').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const index = document.querySelector('.js-btn-check-answer').getAttribute('id')
+        // console.log(index)
+        const inputWord = document.querySelector('#inputWordGame1')
+        const timeTestDisplay = document.querySelector('.js-time-test-display')
+        const timeLiveDisplay = document.querySelector('.js-time-live-display')
+        const timeSuggestDisplay = document.querySelector('.js-time-suggest-display')
+        const meaning = g_listWord[index].meaning
+        const listAnswer = g_listWord.filter((el) => {
+            return el.meaning === meaning
+        })
+        const checkAns = listAnswer.some((el) => {
+            return el.word === inputWord.value.trim()
+        })
+
+        if (!checkAns) {
+            // Wrong answer
+            inputWord.classList.add('is-invalid')
+            g_timeLive--
+            document.querySelector('.js-time-live-display span').innerText = g_timeLive
+            timeTestDisplay.classList.remove('btn-outline-success')
+            timeTestDisplay.classList.add('btn-outline-primary')
+            timeLiveDisplay.classList.remove('btn-outline-primary')
+            timeLiveDisplay.classList.add('btn-outline-danger')
+            if (g_timeLive === 0) {
+                // Show Modal 
+                showToast('Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
+                renderGame1()
+                return
+            }
+            inputWord.focus()
+            return
+        }
+        // Right answer
+        // showToast(`Đáp án trả lời đúng. ${inputWord.value.trim()}`, 'success')
+        g_timeTest--
+        if (g_timeTest === 0) {
+            // Complete Game 
+            showToast('Chúc mừng bạn đã hoàn thành xuất sắc trò chơi. Vui lòng vào Trang cá nhân để lấy phần thưởng!', 'info')
+            renderGame1()
+            return
+        }
+        timeTestDisplay.classList.remove('btn-outline-primary')
+        timeTestDisplay.classList.add('btn-outline-success')
+        timeLiveDisplay.classList.remove('btn-outline-danger')
+        timeLiveDisplay.classList.add('btn-outline-primary')
+        timeSuggestDisplay.classList.remove('btn-outline-warning')
+        timeSuggestDisplay.classList.add('btn-outline-primary')
+        document.querySelector('.js-time-test-display span').innerText = g_timeTest
+        renderGame1Content()
+        document.querySelector('#inputWordGame1').focus()
+    })
+}
+
+const addHandlerSuggestFirstChar = () => {
+    document.querySelector('.js-btn-suggest-first-char').addEventListener('click', (e) => {
+        const btn = e.target
+        if (!btn) return
+        const index = btn.dataset.index
+        const meaning = g_listWord[index].meaning
+        const listSuggest = g_listWord.filter((el) => {
+            return el.meaning === meaning
+        })
+        const firstCharSug = listSuggest.map((el) => {
+            return el.word.charAt(0)
+        })
+        const random = Math.floor(Math.random() * firstCharSug.length)
+        document.querySelector('#inputWordGame1').value = firstCharSug[random]
+    })
+}
+
+const addHandlerSuggestWord = () => {
+    document.querySelector('.js-btn-suggest').addEventListener('click', (e) => {
+        const btn = e.target
+        if (!btn) return
+        const index = btn.dataset.index
+        if (g_timeSuggest === 0) {
+            showToast('Bạn đã dùng hết sự trợ giúp.', 'warning')
+            return
+        }
+        const meaning = g_listWord[index].meaning
+        const listSuggest = g_listWord.filter((el) => {
+            return el.meaning === meaning
+        })
+        btn.setAttribute('disabled', '')
+        btn.innerHTML = listSuggest.map((el) => {
+            return `${el.word}`
+        }).join(' / ')
+        g_timeSuggest--
+        document.querySelector('.js-time-suggest-display span').innerText = g_timeSuggest
+        document.querySelector('.js-time-suggest-display').classList.remove('btn-outline-primary')
+        document.querySelector('.js-time-suggest-display').classList.add('btn-outline-warning')
+    })
+}
 // Auth + User
 const addHandlerRenderOptionLogin = () => {
     const btnLoginwithEmail = document.querySelector('.js-btn-login-email')
@@ -506,6 +631,7 @@ const addHandlerSubmitLogin = () => {
         e.preventDefault()
         await login({ username: "Hoàng Trung Sang", email: "sangank@gmail.com" })
         await getUserFromLocalStorage()
+        showToast('Đăng nhập thành công.', 'success')
         renderUserDisplay()
         renderListWordTable()
     })
@@ -514,11 +640,12 @@ const addHandlerSubmitLogin = () => {
 const addHandlerLogOut = () => {
     document.querySelector('.js-logout').addEventListener('click', (e) => {
         logout()
-        g_user = {}
+        // g_user = {}
         getUserFromLocalStorage()
-        renderLoginClick()
-        clear(accountEl)
         g_listWord = []
+        showToast('Bạn đã đăng xuất', 'info')
+        renderLoginClick()
+        renderOptionLogin()
     })
 }
 
@@ -754,36 +881,29 @@ const addHandlerRenderEditWordInput = () => {
                 if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
                     await updateWordToLocalStorage({ word: inputEditWord.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
                     renderSearchListWordTable()
+                    showToast('Cập nhật thành công.', 'success')
                     return
                 }
                 // thông báo Cập nhật thất bại
                 renderListWordTable()
+                showToast('Cập nhật thất bại.', 'danger')
                 return
             })
             const anotherWord = document.querySelectorAll(`.js-list-word-table tbody tr[id]`)
             for (let word2 of anotherWord) {
-                word2.addEventListener('click', () => {
-                    renderSearchListWordTable()
+                word2.addEventListener('click', async () => {
+                    if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
+                        await updateWordToLocalStorage({ word: inputEditWord.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
+                        renderSearchListWordTable()
+                        showToast('Cập nhật thành công.', 'success')
+                        return
+                    }
+                    // thông báo Cập nhật thất bại
+                    renderListWordTable()
+                    showToast('Cập nhật thất bại.', 'danger')
                     return
                 })
             }
-
-
-            // document.addEventListener('click', (e) => {
-            //     const targetEl = e.target.closest(`.js-list-word-table tbody tr[id="${id}"]`)
-            //     if (!targetEl) {
-            //         ren
-            //     }
-            //     if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
-            //         // updateWordToLocalStorage({ word: inputEditMeaning.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
-            //         // renderSearchListWordTable()
-            //         console.log("OK")
-            //         return
-            //     }
-            //     console.log("Hủy update")
-            //     // renderSearchListWordTable()
-            //     return
-            // })
         })
     }
 }
