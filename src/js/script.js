@@ -11,10 +11,9 @@ const headerEl = document.querySelector('.js-header')
 const contentEl = document.querySelector('.js-content')
 const mainEl = document.querySelector('.js-main')
 const accountEl = document.querySelector('.js-account')
-const btnGame1 = document.querySelector('.js-game-1')
 const userEl = document.querySelector('.js-user')
 
-
+// Người dùng, từ của ng dùng, các trò chơi => database => admin page
 // LOCAL MODAL STATE
 let g_listWord = []
 let g_user
@@ -55,10 +54,6 @@ const renderSpinner = (parentElement) => {
 const renderView = (parentElement, markup) => {
     clear(parentElement)
     parentElement.insertAdjacentHTML('afterbegin', markup)
-}
-
-const updateViewData = (parentElement, markup) => {
-
 }
 
 // Data
@@ -106,19 +101,15 @@ const updateWordToLocalStorage = (newWord, id) => {
     persistListWordLocalStorage()
 }
 
-// HANDLE EVENT - Initial Load
-if (btnGame1) {
-    btnGame1.addEventListener('click', async () => {
-        if (!g_user) {
-            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
-            return
-        }
-        await getListWordFromLocalStorage()
-        renderGame1()
-    })
+// ----------------------- RENDER VIEW-----------------------------
+const renderInitPage = () => {
+    clear(mainEl)
+    renderSpinner(mainEl)
+    renderView(mainEl, initpageMarkup())
+    // add handler
+    addHandlerClickOptionGame()
 }
 
-// ----------------------- RENDER VIEW-----------------------------
 const renderGame1 = () => {
     clear(mainEl)
     renderSpinner(mainEl)
@@ -201,11 +192,48 @@ const renderSearchListWordTable = () => {
 }
 
 //------------------------ MARKUP -------------------------------
+const initpageMarkup = () => {
+    return `
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-lg-12">
+            <div class="card">
+                <div class="js-game-1">
+                    <div class="game-intro card-body">
+                        <h5 class="card-title">
+                            Trò chơi 1
+                            <span class="badge badge-pill badge-success">Sẵn sàng</span>
+                        </h5>
+                        <p class="card-text">Nhập số lượt từ bạn muốn kiểm tra. Bạn sẽ được cung cấp số
+                            lượt
+                            gợi
+                            ý cũng như số mạng sống sót tùy vào số lượt mà bạn đã nhập.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-sm-12 col-lg-12">
+            <div class="card mt-3">
+                <div class="js-game-2">
+                    <div class="game-intro card-body">
+                        <h5 class="card-title">
+                            Trò chơi 2
+                            <span class="badge badge-pill badge-primary">Đang cập nhật</span>
+                        </h5>
+                        <p class="card-text">Chúng ta. Là áng mây ngang trời vội vàng ngang qua.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `
+}
+
 const game1Markup = () => {
 
     g_timeSuggest = TIME_SUGGEST_GAME_1
     g_timeLive = TIME_LIVE_GAME_1
     return `
+        <h3 >Trò chơi 1 </h3>
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
             Bắt đầu trò chơi
         </button>
@@ -469,6 +497,31 @@ const updateListWordMarkup = (list) => {
 }
 
 // ------------------------- ADD HANDLER -------------------------------
+// Init
+
+const addHandlerClickOptionGame = () => {
+    const btnGame1 = document.querySelector('.js-game-1')
+    const btnGame2 = document.querySelector('.js-game-2')
+    btnGame1.addEventListener('click', async () => {
+        if (!g_user) {
+            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+            return
+        }
+        await getListWordFromLocalStorage()
+        renderGame1()
+    })
+
+    btnGame2.addEventListener('click', async () => {
+        if (!g_user) {
+            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+            return
+        }
+        await getListWordFromLocalStorage()
+        showToast('Trò chơi đang trong giai đoạn phát triển. Vui lòng thử lại sau.', 'info')
+        // renderGame2()
+    })
+}
+
 // Game 1
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
@@ -646,6 +699,7 @@ const addHandlerLogOut = () => {
         showToast('Bạn đã đăng xuất', 'info')
         renderLoginClick()
         renderOptionLogin()
+        renderInitPage()
     })
 }
 
@@ -916,6 +970,7 @@ const init = async () => {
     } else {
         renderUserDisplay()
     }
+    renderInitPage()
     // await getListWord()   
 }
 init()

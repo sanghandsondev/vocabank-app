@@ -6,6 +6,7 @@
     display: none;
 }
 
+
 /* HEADER */
 
 
@@ -22,6 +23,9 @@
     user-select: none;
     cursor: pointer;
 }
+
+/* BREADCRUMB */
+
 
 /* TOAST */
 #my-toast {
