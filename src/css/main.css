@@ -6,12 +6,36 @@
     display: none;
 }
 
-
+/* F0F2F5 */
 /* HEADER */
 
+/* FOOTER  */
+.footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer__body {
+    padding: 10px;
+}
+
+/* SIDEBAR ADMIN */
+.sidebar {
+    min-height: 100vh;
+
+}
 
 .content {
-    margin: 80px 2rem 0 9rem;
+    padding: 80px 4rem 0 9rem;
+    background-color: #F0F2F5;
+    min-height: 100vh;
+
 }
 
 .game-intro {
