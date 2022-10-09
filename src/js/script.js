@@ -719,7 +719,6 @@ const addHandlerSubmitTimeTestForm = () => {
                     location.assign('/')
                 }, 4000)
             }
-            console.log(g_timeOut)
             g_timeOut -= 1000
         }, 1000)
         // clear interval
@@ -782,7 +781,6 @@ const addHandlerSubmitCheckAnswerForm = () => {
             return
         }
         // Right answer
-        // showToast(`Đáp án trả lời đúng. ${inputWord.value.trim()}`, 'success')
         g_timeTest--
         if (g_timeTest === 0) {
             // Complete Game 
