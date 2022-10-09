@@ -7,7 +7,7 @@ import { login, logout } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
 
-const app = document.querySelector('.js-app')
+// const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
 const contentEl = document.querySelector('.js-content')
 const mainEl = document.querySelector('.js-main')
@@ -116,6 +116,7 @@ const renderInitPage = async () => {
     await renderView(mainEl, initpageMarkup())
     // add handler
     addHandlerClickOptionGame()
+    addHandlerGoToAdminPage()
 }
 
 const renderGame1 = async () => {
@@ -189,6 +190,12 @@ const renderListWordTable = async () => {
     addHandlerInputSearchWord()
     addHandlerRenderEditWordInput()
     addHandlerRenderPaginationPage()  // OK
+}
+
+//--- Admin ---
+const renderInitAdminPage = () => {
+    clear(headerEl)
+    clear(contentEl)
 }
 
 // LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
@@ -423,6 +430,7 @@ const loginClickMarkup = () => {
 }
 
 const userDisplayMarkup = () => {
+    const linkAdminPage = g_user.rule === "admin" ? `<a class="dropdown-item js-user-admin-page" href="#admin123123123">Trang Admin</a>` : ''
     return `
     <li class="nav-item dropdown mr-5">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -432,6 +440,7 @@ const userDisplayMarkup = () => {
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item js-user-info" href="#">Trang cá nhân</a>
             <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
+            ${linkAdminPage}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item js-logout" href="#">Đăng xuất</a>
         </div>
@@ -668,6 +677,15 @@ const addHandlerClickOptionGame = async () => {
     })
 }
 
+const addHandlerGoToAdminPage = () => {
+    window.addEventListener('hashchange', () => {
+        // console.log(typeof location.hash.slice(1))
+        if (location.hash.slice(1) === "admin123123123") {
+            renderInitAdminPage()
+        }
+    })
+}
+
 // Game 1
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
@@ -871,7 +889,7 @@ const addHandlerClickLogIn = () => {
 const addHandlerSubmitLogin = () => {
     document.querySelector('.js-form-login').addEventListener('submit', async (e) => {
         e.preventDefault()
-        await login({ username: "Hoàng Trung Sang", email: "sangank@gmail.com" })
+        await login({ username: "Hoàng Trung Sang", email: "sangank@gmail.com", rule: "admin" })
         await getUserFromLocalStorage()
         showToast('Đăng nhập thành công.', 'success')
         renderUserDisplay()
