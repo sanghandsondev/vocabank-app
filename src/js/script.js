@@ -194,8 +194,9 @@ const renderListWordTable = async () => {
 
 //--- Admin ---
 const renderInitAdminPage = () => {
-    clear(headerEl)
+    // clear(headerEl)
     clear(contentEl)
+    clear(userEl)
 }
 
 // LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
@@ -1138,31 +1139,24 @@ const addHandlerRenderEditWordInput = () => {
                 inputEditMeaning.classList.remove('is-invalid')
                 inputEditMeaning.classList.add('is-valid')
             })
-
+            // console.log(inputEditWord, inputEditMeaning)
             document.querySelector('.js-btn-confirm-edit-word').addEventListener('click', async () => {
                 if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
                     await updateWordToLocalStorage({ word: inputEditWord.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
-                    renderSearchListWordTable()
                     showToast('Cập nhật thành công.', 'success')
+                    renderSearchListWordTable()
                     return
                 }
                 // thông báo Cập nhật thất bại
-                renderListWordTable()
                 showToast('Cập nhật thất bại.', 'danger')
+                renderSearchListWordTable()
                 return
             })
             const anotherWord = document.querySelectorAll(`.js-list-word-table tbody tr[id]`)
             for (let word2 of anotherWord) {
                 word2.addEventListener('click', async () => {
-                    if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
-                        await updateWordToLocalStorage({ word: inputEditWord.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
-                        renderSearchListWordTable()
-                        showToast('Cập nhật thành công.', 'success')
-                        return
-                    }
-                    // thông báo Cập nhật thất bại
-                    renderListWordTable()
                     showToast('Cập nhật thất bại.', 'danger')
+                    renderSearchListWordTable()
                     return
                 })
             }
