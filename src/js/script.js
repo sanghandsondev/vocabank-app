@@ -163,7 +163,7 @@ const renderSignup = async () => {
     // add handler
 }
 
-const renderUserDisplay = async (user) => {
+const renderUserDisplay = async () => {
     clear(userEl)
     await renderView(userEl, userDisplayMarkup())
     // add handler
@@ -649,6 +649,8 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         renderGame1()
+        clear(accountEl)
+        clear(userEl)
     })
 
     btnGame2.addEventListener('click', async () => {
