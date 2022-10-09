@@ -1,10 +1,11 @@
 import 'core-js/stable'                     // polyfilling everything else
 import '@babel/polyfill'
 // import 'regenerator-runtime/runtime'        // polyfilling async/await
-import { TIME_LIVE_GAME_1, TIME_SUGGEST_GAME_1 } from './config'
+import { RESULT_PER_PAGE } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout } from './auth'
-import { showToast } from './custom'
+import { showToast, setTimeDisplay } from './custom'
+import { async } from 'regenerator-runtime'
 
 const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -102,28 +103,28 @@ const updateWordToLocalStorage = (newWord, id) => {
 }
 
 // ----------------------- RENDER VIEW-----------------------------
-const renderInitPage = () => {
+const renderInitPage = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    renderView(mainEl, initpageMarkup())
+    await renderView(mainEl, initpageMarkup())
     // add handler
     addHandlerClickOptionGame()
 }
 
-const renderGame1 = () => {
+const renderGame1 = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    renderView(mainEl, game1Markup())
+    await renderView(mainEl, game1Markup())
     // add handler here for game 1 view
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm()
 }
 
-const renderGame1Content = () => {
+const renderGame1Content = async () => {
     const contentEl = document.querySelector('.js-game1-content')
     clear(contentEl)
     renderSpinner(contentEl)
-    renderView(contentEl, game1ContentMarkup(g_listWord))
+    await renderView(contentEl, game1ContentMarkup(g_listWord))
     //add handler
     addHandlerInputWordGame1()
     addHandlerSubmitCheckAnswerForm()
@@ -131,64 +132,77 @@ const renderGame1Content = () => {
     addHandlerSuggestWord()
 }
 
-const renderOptionLogin = () => {
+const renderOptionLogin = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    renderView(accountEl, optionLoginMarkup())
+    await renderView(accountEl, optionLoginMarkup())
     // add handler
     addHandlerRenderOptionLogin()
     addHandlerRenderSignup()
 }
 
-const renderLoginWithEmail = () => {
+const renderLoginWithEmail = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    renderView(accountEl, formLoginWithEmailMarkup())
+    await renderView(accountEl, formLoginWithEmailMarkup())
     // add handler
     addHandlerSubmitLogin()
 }
 
-const renderSignup = () => {
+const renderSignup = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    renderView(accountEl, formSignUpMarkup())
+    await renderView(accountEl, formSignUpMarkup())
     // add handler
 }
 
-const renderUserDisplay = (user) => {
+const renderUserDisplay = async (user) => {
     clear(userEl)
-    renderView(userEl, userDisplayMarkup())
+    await renderView(userEl, userDisplayMarkup())
     // add handler
     addHandlerLogOut()
     addHandlerRenderListWordTable()
 }
 
-const renderLoginClick = () => {
+const renderLoginClick = async () => {
     clear(userEl)
-    renderView(userEl, loginClickMarkup())
+    await renderView(userEl, loginClickMarkup())
     //add handler
     addHandlerClickLogIn()
 }
 
 const renderListWordTable = async () => {
+    // LOAD LẦN ĐẦU THÔI
     clear(accountEl)
     renderSpinner(accountEl)
     await getListWordFromLocalStorage()
-    renderView(accountEl, listWordTableMarkup(g_listWord))
+    await renderView(accountEl, listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
     addHandlerInputSearchWord()
     addHandlerRenderEditWordInput()
+    addHandlerRenderPaginationPage()  // OK
 }
 
-const renderSearchListWordTable = () => {
+// LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
+const renderSearchListWordTable = async () => {
     const listword = document.querySelector('.js-list-word-table')
     const inputSearch = document.querySelector('#inputSearchWord')
     clear(listword)
     renderSpinner(listword)
-    renderView(listword, updateListWordMarkup(resultSearchListWord(inputSearch.value)))
+    await renderView(listword, updateListWordMarkup(resultSearchListWord(inputSearch.value)))
+    renderUpdatePagination()
     // add handler
     addHandlerRenderEditWordInput()
+}
+
+const renderUpdatePagination = () => {
+    const paginationEl = document.querySelector('.js-pagination-list-word')
+    const inputSearch = document.querySelector('#inputSearchWord')
+    clear(paginationEl)
+    renderSpinner(paginationEl)
+    renderView(paginationEl, updatePaginationMarkup(resultSearchListWord(inputSearch.value)))
+    // add handler
 }
 
 //------------------------ MARKUP -------------------------------
@@ -230,8 +244,8 @@ const initpageMarkup = () => {
 
 const game1Markup = () => {
 
-    g_timeSuggest = TIME_SUGGEST_GAME_1
-    g_timeLive = TIME_LIVE_GAME_1
+    // g_timeSuggest = TIME_SUGGEST_GAME_1
+    // g_timeLive = TIME_LIVE_GAME_1
     return `
         <h3 >Trò chơi 1 </h3>
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
@@ -241,17 +255,25 @@ const game1Markup = () => {
         <div class="js-time-game1 hidden"> 
             <button type="button" class="btn btn-outline-primary js-time-test-display" disabled>
                 Luợt kiểm tra:
-                <span class="text-dark font-weight-bold"></span>
+                <span class=" font-weight-bold"></span>
             </button>
 
             <button type="button" class="btn btn-outline-primary ml-5 js-time-suggest-display" disabled>
                 Lượt gợi ý còn lại:
-                <span class="text-dark font-weight-bold">${g_timeSuggest}</span>
+                <span class=" font-weight-bold"></span>
             </button>
 
             <button type="button" class="btn btn-outline-primary ml-5 js-time-live-display" disabled>
                 Số mạng còn lại của bạn:
-                <span class="text-dark font-weight-bold">${g_timeLive}</span>
+                <span class=" font-weight-bold"></span>
+            </button>
+            <button type="button" class="btn btn-info btn-lg ml-5 js-time-out-display" disabled>
+                <span class="js-hour-display"></span>
+                :
+                <span class="js-minute-display"></span>
+                :
+                <span class="js-second-display"></span>
+                
             </button>
         </div>
         <div class="js-game1-content">
@@ -408,9 +430,12 @@ const userDisplayMarkup = () => {
 }
 
 const listWordTableMarkup = (list) => {
-    // resultSearchListWord(input)
-    const markup = list.map((el, index) => {
+    let markupPagi
+    const numPages = Math.ceil(list.length / RESULT_PER_PAGE)
 
+    list = list.slice(0, RESULT_PER_PAGE)
+
+    const markupList = list.map((el, index) => {
         return `
         <tr id="${el.id}">
             <th scope="row">    
@@ -427,6 +452,31 @@ const listWordTableMarkup = (list) => {
         </tr>  
         `
     }).join('')
+
+    if (numPages > 1) {
+        markupPagi = `
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">
+                        Trước
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item js-btn-inline" data-goto=2>
+                    <a class="page-link" href="#"  >
+                        Sau
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        `
+    }
+    if (numPages <= 1) {
+        markupPagi = `
+        
+        `
+    }
 
     return `
     <div class="input-group mb-3">
@@ -446,13 +496,21 @@ const listWordTableMarkup = (list) => {
             </tr>
         </thead>
         <tbody>
-            ${markup}
+            ${markupList}
         </tbody>
     </table>
+
+    <div class="js-pagination-list-word" data-index=1>
+        ${markupPagi}
+    </div>
     `
 }
 
 const updateListWordMarkup = (list) => {
+    const currentPage = document.querySelector('.js-pagination-list-word').dataset.index
+    const start = (currentPage - 1) * RESULT_PER_PAGE
+    const end = currentPage * RESULT_PER_PAGE
+    list = list.slice(start, end)
     if (list.length === 0) return `
         <thead>
                 <tr>
@@ -494,6 +552,74 @@ const updateListWordMarkup = (list) => {
             ${markup}
         </tbody>
     `
+}
+
+const updatePaginationMarkup = (list) => {
+    let currentPage = Number(document.querySelector('.js-pagination-list-word').dataset.index)
+    let numPages = Math.ceil(list.length / RESULT_PER_PAGE)
+
+    // Page 1, and there are other  pages
+    if (currentPage === 1 && numPages > 1) {
+        return `
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#"  >
+                        Trước
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">${currentPage}</a></li>
+                <li class="page-item js-btn-inline" data-goto=${currentPage + 1}>
+                    <a class="page-link" href="#"  >
+                        Sau
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        `
+    }
+    // Last page
+    if (currentPage === numPages && numPages > 1) {
+        return `
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item js-btn-inline" data-goto=${currentPage - 1}>
+                    <a class="page-link" href="#">
+                        Trước
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">${currentPage}</a></li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">
+                        Sau
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        `
+    }
+    // Other page
+    if (currentPage < numPages) {
+        return `
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item js-btn-inline" data-goto=${currentPage - 1}>
+                    <a class="page-link" href="#" >
+                        Trước
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">${currentPage}</a></li>
+                <li class="page-item js-btn-inline" data-goto=${currentPage + 1}>
+                    <a class="page-link" href="#"  >
+                        Sau
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        `
+    }
+    // Page 1, and there are NO other pages
+    return ''
 }
 
 // ------------------------- ADD HANDLER -------------------------------
@@ -545,11 +671,46 @@ const addHandlerSubmitTimeTestForm = () => {
             document.querySelector('#timeTestHelp').textContent = `Bạn cần nhập một số nguyên dương.`
             return false
         }
+        if (timeTest > 360) {
+            document.querySelector('#timeTestHelp').textContent = `Tối đa 360 lượt.`
+            return false
+        }
         g_timeTest = timeTest
+        g_timeSuggest = Number.parseInt(timeTest / 7)
+        g_timeLive = Number.parseInt(timeTest / 4)
+        g_timeOut = (timeTest * 20 * 1000)
+        const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
+        setTimeDisplay(g_timeOut)
+        setInterval(() => {
+            setTimeDisplay(g_timeOut)
+            g_timeOut -= 1000
+            if (g_timeOut === 180000) {
+                btnTimeOutDisplay.classList.remove('btn-info')
+                btnTimeOutDisplay.classList.add('btn-warning')
+                showToast('Bạn còn 3 phút để hoàn thành bài thi.', 'warning')
+            }
+            if (g_timeOut === 60000) {
+                btnTimeOutDisplay.classList.remove('btn-info')
+                btnTimeOutDisplay.classList.remove('btn-warning')
+                btnTimeOutDisplay.classList.add('btn-danger')
+                showToast('Bạn còn 1 phút để hoàn thành bài thi.', 'danger')
+            }
+            if (g_timeOut === 0) {
+                showToast('Hết thời gian. Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
+                renderGame1()
+            }
+        }, 1000)
+        // document.querySelector('.js-hour-display').innerText = timeDisplay.hour
+        // document.querySelector('.js-minute-display').innerText = timeDisplay.minute
+        // document.querySelector('.js-second-display').innerText = timeDisplay.second
+
+
         $('#timeTestModal').modal('hide')
         document.querySelector('.js-time-game1').classList.remove('hidden')
         document.querySelector('.js-btn-start-game').classList.add('hidden')
         document.querySelector('.js-time-test-display span').textContent = g_timeTest
+        document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
+        document.querySelector('.js-time-live-display span').textContent = g_timeLive
         renderGame1Content()
         document.querySelector('#inputWordGame1').focus()
     })
@@ -583,10 +744,10 @@ const addHandlerSubmitCheckAnswerForm = () => {
             inputWord.classList.add('is-invalid')
             g_timeLive--
             document.querySelector('.js-time-live-display span').innerText = g_timeLive
-            timeTestDisplay.classList.remove('btn-outline-success')
+            timeTestDisplay.classList.remove('btn-success')
             timeTestDisplay.classList.add('btn-outline-primary')
             timeLiveDisplay.classList.remove('btn-outline-primary')
-            timeLiveDisplay.classList.add('btn-outline-danger')
+            timeLiveDisplay.classList.add('btn-danger')
             if (g_timeLive === 0) {
                 // Show Modal 
                 showToast('Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
@@ -606,10 +767,10 @@ const addHandlerSubmitCheckAnswerForm = () => {
             return
         }
         timeTestDisplay.classList.remove('btn-outline-primary')
-        timeTestDisplay.classList.add('btn-outline-success')
-        timeLiveDisplay.classList.remove('btn-outline-danger')
+        timeTestDisplay.classList.add('btn-success')
+        timeLiveDisplay.classList.remove('btn-danger')
         timeLiveDisplay.classList.add('btn-outline-primary')
-        timeSuggestDisplay.classList.remove('btn-outline-warning')
+        timeSuggestDisplay.classList.remove('btn-warning')
         timeSuggestDisplay.classList.add('btn-outline-primary')
         document.querySelector('.js-time-test-display span').innerText = g_timeTest
         renderGame1Content()
@@ -654,7 +815,7 @@ const addHandlerSuggestWord = () => {
         g_timeSuggest--
         document.querySelector('.js-time-suggest-display span').innerText = g_timeSuggest
         document.querySelector('.js-time-suggest-display').classList.remove('btn-outline-primary')
-        document.querySelector('.js-time-suggest-display').classList.add('btn-outline-warning')
+        document.querySelector('.js-time-suggest-display').classList.add('btn-warning')
     })
 }
 // Auth + User
@@ -825,6 +986,7 @@ const addHandlerAddWord = () => {
 const addHandlerInputSearchWord = () => {
     document.querySelector('#inputSearchWord').addEventListener('input', (e) => {
         e.target.value = e.target.value.toLowerCase()
+        document.querySelector('.js-pagination-list-word').setAttribute('data-index', 1)
         renderSearchListWordTable()
     })
 }
@@ -960,6 +1122,18 @@ const addHandlerRenderEditWordInput = () => {
             }
         })
     }
+}
+
+const addHandlerRenderPaginationPage = () => {
+    document.querySelector('.js-pagination-list-word').addEventListener('click', (e) => {
+        let btn = (e.target.closest('.js-btn-inline'))
+        if (!btn) return
+        let goToPage = btn.dataset.goto
+        document.querySelector('.js-pagination-list-word').removeAttribute('data-index')
+        document.querySelector('.js-pagination-list-word').setAttribute('data-index', goToPage)
+        renderUpdatePagination()
+        renderSearchListWordTable()
+    })
 }
 
 // --------------------------- INIT -------------------------

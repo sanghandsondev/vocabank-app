@@ -17,3 +17,22 @@ export const showToast = (message, type) => {
         clearTimeout(autoRemove)
     })
 }
+
+export const setTimeDisplay = (timeIn1000Second) => {
+    const second = 1000
+    const minute = second * 60
+    const hour = minute * 60
+    // String hay Number đều OK
+    let textHour = Math.floor(timeIn1000Second / hour)
+    textHour = textHour < 10 ? `0${textHour}` : textHour
+    let textMinute = Math.floor((timeIn1000Second % hour) / minute)
+    textMinute = textMinute < 10 ? `0${textMinute}` : textMinute
+    let textSecond = Math.floor((timeIn1000Second % minute) / second)
+    textSecond = textSecond < 10 ? `0${textSecond}` : textSecond
+
+    document.querySelector('.js-hour-display').innerText = textHour
+    document.querySelector('.js-minute-display').innerText = textMinute
+    document.querySelector('.js-second-display').innerText = textSecond
+
+    // return { hour: textHour, minute: textMinute, second: textSecond }
+}
