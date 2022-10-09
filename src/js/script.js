@@ -35,6 +35,13 @@ const getUserFromLocalStorage = async () => {
     g_user = JSON.parse(user)
 }
 
+const resetLocalGameState = () => {
+    g_timeOut = 0
+    g_timeLive = 0
+    g_timeSuggest = 0
+    g_timeTest = 0
+}
+
 // MAIN CONTROLLER
 const clear = (parentElement) => {
     parentElement.innerHTML = ''
@@ -215,12 +222,12 @@ const initpageMarkup = () => {
                     <div class="game-intro card-body">
                         <h5 class="card-title">
                             Trò chơi 1
-                            <span class="badge badge-pill badge-success">Sẵn sàng</span>
+                            <span class="badge badge-pill badge-danger">Khó</span>
                         </h5>
-                        <p class="card-text">Nhập số lượt từ bạn muốn kiểm tra. Bạn sẽ được cung cấp số
-                            lượt
-                            gợi
-                            ý cũng như số mạng sống sót tùy vào số lượt mà bạn đã nhập.</p>
+                        <p class="card-text">
+                            Trò chơi giống như một bài kiểm tra trắc luận. Bạn sẽ nhập số lượt từ bạn muốn kiểm tra. 
+                            Sẽ có thời gian và gợi ý cho bạn để hoàn thành trò chơi. 
+                        </p>
                     </div>
                 </div>
             </div>
@@ -233,7 +240,10 @@ const initpageMarkup = () => {
                             Trò chơi 2
                             <span class="badge badge-pill badge-primary">Đang cập nhật</span>
                         </h5>
-                        <p class="card-text">Chúng ta. Là áng mây ngang trời vội vàng ngang qua.</p>
+                        <p class="card-text">
+                            Trò chơi giống như một bài kiểm tra trắc nghiệm. Bạn sẽ nhập số lượt từ bạn muốn kiểm tra. 
+                            Sẽ chỉ có thời gian đếm ngược và không có gợi ý dành cho bạn trong quá trình thực hiện.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -625,7 +635,7 @@ const updatePaginationMarkup = (list) => {
 // ------------------------- ADD HANDLER -------------------------------
 // Init
 
-const addHandlerClickOptionGame = () => {
+const addHandlerClickOptionGame = async () => {
     const btnGame1 = document.querySelector('.js-game-1')
     const btnGame2 = document.querySelector('.js-game-2')
     btnGame1.addEventListener('click', async () => {
@@ -633,8 +643,7 @@ const addHandlerClickOptionGame = () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
-        // await getListWordFromLocalStorage()
-        // console.log(!g_listWord)
+        await getListWordFromLocalStorage()
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
@@ -647,11 +656,11 @@ const addHandlerClickOptionGame = () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
+        await getListWordFromLocalStorage()
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
         }
-        await getListWordFromLocalStorage()
         showToast('Trò chơi đang trong giai đoạn phát triển. Vui lòng thử lại sau.', 'info')
         // renderGame2()
     })
@@ -690,9 +699,9 @@ const addHandlerSubmitTimeTestForm = () => {
         g_timeOut = (timeTest * 20 * 1000)
         const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
         setTimeDisplay(g_timeOut)
-        setInterval(() => {
+        const myTimer = setInterval(() => {
             setTimeDisplay(g_timeOut)
-            g_timeOut -= 1000
+
             if (g_timeOut === 180000) {
                 btnTimeOutDisplay.classList.remove('btn-info')
                 btnTimeOutDisplay.classList.add('btn-warning')
@@ -703,12 +712,18 @@ const addHandlerSubmitTimeTestForm = () => {
                 btnTimeOutDisplay.classList.add('btn-danger')
             }
             if (g_timeOut === 0) {
+                // resetLocalGameState()
+                clearInterval(myTimer)
                 showToast('Hết thời gian. Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
-                renderInitPage()
+                setTimeout(() => {
+                    location.assign('/')
+                }, 4000)
             }
+            console.log(g_timeOut)
+            g_timeOut -= 1000
         }, 1000)
-
-
+        // clear interval
+        // const stopTimer = clearInterval(myTimer)
 
         $('#timeTestModal').modal('hide')
         document.querySelector('.js-time-game1').classList.remove('hidden')
@@ -753,10 +768,14 @@ const addHandlerSubmitCheckAnswerForm = () => {
             timeTestDisplay.classList.add('btn-outline-primary')
             timeLiveDisplay.classList.remove('btn-outline-primary')
             timeLiveDisplay.classList.add('btn-danger')
-            if (g_timeLive === 0) {
+            if (g_timeLive === 0 || g_timeLive < 0) {
                 // Show Modal 
+                // resetLocalGameState()
                 showToast('Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
-                renderInitPage()
+                setTimeout(() => {
+                    location.assign('/')
+                }, 4000)
+                // renderInitPage()
                 return
             }
             inputWord.focus()
@@ -768,7 +787,11 @@ const addHandlerSubmitCheckAnswerForm = () => {
         if (g_timeTest === 0) {
             // Complete Game 
             showToast('Chúc mừng bạn đã hoàn thành xuất sắc trò chơi. Vui lòng vào Trang cá nhân để lấy phần thưởng!', 'info')
-            renderGame1()
+            setTimeout(() => {
+                location.assign('/')
+            }, 4000)
+            // resetLocalGameState()
+            // renderInitPage()
             return
         }
         timeTestDisplay.classList.remove('btn-outline-primary')
