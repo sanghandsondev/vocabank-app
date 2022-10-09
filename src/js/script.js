@@ -633,13 +633,22 @@ const addHandlerClickOptionGame = () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
-        await getListWordFromLocalStorage()
+        // await getListWordFromLocalStorage()
+        // console.log(!g_listWord)
+        if (g_listWord.length < 10) {
+            showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
+            return
+        }
         renderGame1()
     })
 
     btnGame2.addEventListener('click', async () => {
         if (!g_user) {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+            return
+        }
+        if (g_listWord.length < 10) {
+            showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
         }
         await getListWordFromLocalStorage()
@@ -687,22 +696,18 @@ const addHandlerSubmitTimeTestForm = () => {
             if (g_timeOut === 180000) {
                 btnTimeOutDisplay.classList.remove('btn-info')
                 btnTimeOutDisplay.classList.add('btn-warning')
-                showToast('Bạn còn 3 phút để hoàn thành bài thi.', 'warning')
             }
             if (g_timeOut === 60000) {
                 btnTimeOutDisplay.classList.remove('btn-info')
                 btnTimeOutDisplay.classList.remove('btn-warning')
                 btnTimeOutDisplay.classList.add('btn-danger')
-                showToast('Bạn còn 1 phút để hoàn thành bài thi.', 'danger')
             }
             if (g_timeOut === 0) {
                 showToast('Hết thời gian. Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
-                renderGame1()
+                renderInitPage()
             }
         }, 1000)
-        // document.querySelector('.js-hour-display').innerText = timeDisplay.hour
-        // document.querySelector('.js-minute-display').innerText = timeDisplay.minute
-        // document.querySelector('.js-second-display').innerText = timeDisplay.second
+
 
 
         $('#timeTestModal').modal('hide')
@@ -751,7 +756,7 @@ const addHandlerSubmitCheckAnswerForm = () => {
             if (g_timeLive === 0) {
                 // Show Modal 
                 showToast('Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
-                renderGame1()
+                renderInitPage()
                 return
             }
             inputWord.focus()
