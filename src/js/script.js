@@ -183,7 +183,7 @@ const renderListWordTable = async () => {
     // LOAD LẦN ĐẦU THÔI
     clear(accountEl)
     renderSpinner(accountEl)
-    await getListWordFromLocalStorage()
+    await getListWordFromLocalStorage()   // LOAD data lần đầu vs API
     await renderView(accountEl, listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
@@ -461,9 +461,9 @@ const listWordTableMarkup = (list) => {
 
         return `
         <tr id="${el.id}">
-            <th scope="row">    
+            <td>    
                 ${el.word}
-            </th>
+            </td>
             <td class="fix-line-css">
                 ${el.meaning}
             
@@ -550,9 +550,9 @@ const updateListWordMarkup = (list) => {
     const markup = list.map((el, index) => {
         return `
         <tr id="${el.id}">
-            <th scope="row">    
+            <td>    
                 ${el.word}
-            </th>
+            </td>
             <td class="fix-line-css">
             ${el.meaning}
             </td>
@@ -718,7 +718,7 @@ const adminPageInitMarkup = () => {
 }
 
 // ------------------------- ADD HANDLER -------------------------------
-// Init
+// Init Page Load
 
 const addHandlerClickOptionGame = async () => {
     const btnGame1 = document.querySelector('.js-game-1')
@@ -729,6 +729,7 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         await getListWordFromLocalStorage()
+
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
@@ -743,7 +744,9 @@ const addHandlerClickOptionGame = async () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
+
         await getListWordFromLocalStorage()
+
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
@@ -755,7 +758,6 @@ const addHandlerClickOptionGame = async () => {
 
 const addHandlerGoToAdminPage = () => {
     window.addEventListener('hashchange', () => {
-        // console.log(typeof location.hash.slice(1))
         if (location.hash.slice(1) === "admin123123123") {
             renderInitAdminPage()
         }
@@ -1028,8 +1030,9 @@ const addHandlerRenderAddWordInput = () => {
         if (btn.textContent === "Hủy") {
             btn.textContent = "Thêm"
             // tbody.querySelector(':first-child').outerHTML = ''
-            tbody.removeChild(tbody.querySelector(':first-child'))
+            // tbody.removeChild(tbody.querySelector(':first-child'))
             document.querySelector('#inputSearchWord').removeAttribute('disabled')
+            renderSearchListWordTable()
             return false
         }
         btn.textContent = "Hủy"
@@ -1054,10 +1057,10 @@ const addHandlerAddWord = () => {
         const markup = `
         
         <tr>
-            <th scope="row">${newWord.word}</th>
+            <td>${newWord.word}</td>
             <td>${newWord.meaning = newWord.meaning.length > 20 ? newWord.meaning.slice(0, 20) + "..." : newWord.meaning}</td>
             <td>
-                <button type="button" class="btn btn-outline-success btn-sm">New</button>
+                <button type="button" class="btn btn-outline-success btn-sm disabled">New</button>
             </td>
         </tr>
         `
@@ -1126,7 +1129,8 @@ const addHandlerRenderEditWordInput = () => {
                 document.querySelector('.js-btn-confirm-remove-word').addEventListener('click', (e) => {
                     removeWordToLocalStorage(id)
                     $('#confirmRemoveWordModal').modal('hide')
-                    word.classList.add('hidden')
+                    renderSearchListWordTable()
+                    // word.classList.add('hidden')
                 })
                 return
             }
@@ -1165,8 +1169,10 @@ const addHandlerRenderEditWordInput = () => {
                 </td>
             </tr>
             `
-            word.outerHTML = markup
-
+            // word.outerHTML = markup
+            const newMarkup = document.createElement('tr')
+            newMarkup.innerHTML = markup
+            word.parentElement.replaceChild(newMarkup, word)
             const inputEditWord = document.querySelector('#inputEditWord')
             const inputEditMeaning = document.querySelector('#inputEditMeaning')
             inputEditWord.setSelectionRange(initWord.length, initWord.length)
@@ -1228,12 +1234,13 @@ const addHandlerRenderEditWordInput = () => {
                 // thông báo Cập nhật thất bại
                 showToast('Cập nhật thất bại.', 'danger')
                 renderSearchListWordTable()
+                // newMarkup.parentElement.replaceChild(word, newMarkup)
                 return
             })
             const anotherWord = document.querySelectorAll(`.js-list-word-table tbody tr[id]`)
             for (let word2 of anotherWord) {
-                word2.addEventListener('click', async () => {
-                    showToast('Cập nhật thất bại.', 'danger')
+                word2.addEventListener('click', async (e) => {
+                    showToast('Cập nhật thất bại.', 'warning')
                     renderSearchListWordTable()
                     return
                 })
