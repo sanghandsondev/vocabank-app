@@ -441,6 +441,7 @@ const userDisplayMarkup = () => {
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item js-user-info" href="#">Trang cá nhân</a>
+            <a class="dropdown-item js-user-history-play" href="#">Lịch sử chơi</a>
             <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
             ${linkAdminPage}
             <div class="dropdown-divider"></div>
@@ -457,13 +458,14 @@ const listWordTableMarkup = (list) => {
     list = list.slice(0, RESULT_PER_PAGE)
 
     const markupList = list.map((el, index) => {
+
         return `
         <tr id="${el.id}">
             <th scope="row">    
                 ${el.word}
             </th>
-            <td>
-                ${el.meaning = el.meaning.length > 20 ? el.meaning.slice(0, 20) + "..." : el.meaning}
+            <td class="fix-line-css">
+                ${el.meaning}
             
             </td>
             <td>
@@ -551,8 +553,8 @@ const updateListWordMarkup = (list) => {
             <th scope="row">    
                 ${el.word}
             </th>
-            <td>
-            ${el.meaning = el.meaning.length > 20 ? el.meaning.slice(0, 20) + "..." : el.meaning}
+            <td class="fix-line-css">
+            ${el.meaning}
             </td>
             <td>
             <button type="button" class="btn btn-outline-danger btn-sm js-btn-remove-word"
@@ -1150,7 +1152,7 @@ const addHandlerRenderEditWordInput = () => {
                     <div class="form-group mb-0">
                         <textarea id= "inputEditMeaning" class="form-control" 
                             autocomplete="off" aria-describedby="inputEditMeaningHelp"
-                            >${initMeaning}</textarea>
+                            rows=3>${initMeaning}</textarea>
                         <div class="invalid-feedback">
                             Tối đa 50 ký tự.
                         </div>
@@ -1213,9 +1215,12 @@ const addHandlerRenderEditWordInput = () => {
                 inputEditMeaning.classList.add('is-valid')
             })
             // console.log(inputEditWord, inputEditMeaning)
+
             document.querySelector('.js-btn-confirm-edit-word').addEventListener('click', async () => {
+                const variWord = inputEditWord.value.trim()
+                const variMeaning = inputEditMeaning.value.trim()
                 if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
-                    await updateWordToLocalStorage({ word: inputEditWord.value.trim(), meaning: inputEditMeaning.value.trim() }, id)
+                    await updateWordToLocalStorage({ word: variWord, meaning: variMeaning }, id)
                     showToast('Cập nhật thành công.', 'success')
                     renderSearchListWordTable()
                     return

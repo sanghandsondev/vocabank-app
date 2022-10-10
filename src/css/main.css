@@ -6,6 +6,19 @@
     display: none;
 }
 
+.fix-line-css {
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    /* số dòng hiển thị */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    visibility: visible;
+    /* Tránh bug không giới hạn số dòng được do trình duyệt */
+}
+
 /* F0F2F5 */
 /* HEADER */
 
