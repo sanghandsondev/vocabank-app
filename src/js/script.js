@@ -42,7 +42,6 @@ const getUserFromLocalStorage = async () => {
 const getListHistoryPlayFromLocalStorage = async () => {
 
     const list = await localStorage.getItem('history')
-    console.log(list)
     if (!list) return
     g_listStoryPlay = JSON.parse(list)
 }
@@ -1382,10 +1381,14 @@ const addHandlerPaginatePage = () => {
 }
 
 const addHandlerRenderAllHistory = () => {
-    document.querySelector('.js-btn-more-history').addEventListener('click', () => {
-        renderAllHistory()
-        clear(accountEl)
-    })
+    const btn = document.querySelector('.js-btn-more-history')
+    if (btn) {
+        btn.addEventListener('click', () => {
+            renderAllHistory()
+            clear(accountEl)
+        })
+    }
+
 }
 
 // All history play table
