@@ -230,6 +230,8 @@ const renderListWordTable = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
     await getListWord()   // LOAD data lần đầu vs API
+    console.log(g_listWord)
+
     await renderView(accountEl, listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
@@ -289,7 +291,7 @@ const renderInitAdminPage = () => {
 const initpageMarkup = (list) => {
     const markup = list.map((el, index) => {
         return `
-            <div class="col-xl-12 col-sm-12 col-lg-12">
+            <div class="col-xl-12 col-sm-12 col-lg-12 mb-3">
                 <div class="card">
                     <div class="js-game-${index + 1}">
                         <div class="game-intro card-body">
@@ -487,7 +489,7 @@ const userDisplayMarkup = () => {
     const linkAdminPage = (g_user.role === "admin" || g_user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" href="#admin123123123">Trang Admin</a>` : ''
     return `
     <li class="nav-item dropdown mr-5">
-        <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button"
+        <a class="nav-link dropdown-toggle text-light mr-5" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             ${g_user.name}
         </a>
@@ -580,7 +582,7 @@ const listWordTableMarkup = (list) => {
     </div>
     `
 }
-
+// OK
 const updateListWordMarkup = (list) => {
     const currentPage = document.querySelector('.js-pagination-list-word').dataset.index
     const start = (currentPage - 1) * RESULT_PER_PAGE
@@ -628,7 +630,7 @@ const updateListWordMarkup = (list) => {
         </tbody>
     `
 }
-
+// OK
 const updatePaginationMarkup = (list) => {
     let currentPage = Number(document.querySelector('.js-pagination-list-word').dataset.index)
     let numPages = Math.ceil(list.length / RESULT_PER_PAGE)
@@ -731,6 +733,7 @@ const listHistoryPlayMarkup = (list) => {
     `
 }
 
+// CẦN FIX LẠI
 const allHistoryPlayMarkup = (list) => {
     const length = list.length
     const derseList = list.map((el, index) => {
@@ -845,8 +848,10 @@ const addHandlerClickOptionGame = async () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
-        await getListHistoryPlayFromLocalStorage()
-        await getListWord()
+        if (!g_listWord) {
+            await getListWord()
+        }
+        // await getListHistoryPlayFromLocalStorage()
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
@@ -861,8 +866,10 @@ const addHandlerClickOptionGame = async () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
-        await getListHistoryPlayFromLocalStorage()
-        await getListWord()
+        if (!g_listWord) {
+            await getListWord()
+        }
+        // await getListHistoryPlayFromLocalStorage()
 
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
@@ -1066,21 +1073,18 @@ const addHandlerRenderOptionLogin = () => {
         renderLoginWithEmail()
     })
 }
-
 // OK
 const addHandlerRenderSignup = () => {
     document.querySelector('.js-signup').addEventListener('click', (e) => {
         renderSignup()
     })
 }
-
 // OK
 const addHandlerClickLogIn = () => {
     document.querySelector('.js-login').addEventListener('click', () => {
         renderOptionLogin()
     })
 }
-
 // OK
 const addHandlerSubmitSignup = () => {
     document.querySelector('.js-form-signup').addEventListener('submit', async (e) => {
@@ -1101,7 +1105,6 @@ const addHandlerSubmitSignup = () => {
 
     })
 }
-
 // OK
 const addHandlerSubmitLogin = () => {
     document.querySelector('.js-form-login').addEventListener('submit', async (e) => {
@@ -1119,7 +1122,6 @@ const addHandlerSubmitLogin = () => {
         }
     })
 }
-
 // OK
 const addHandlerLogOut = () => {
     document.querySelector('.js-logout').addEventListener('click', async (e) => {
@@ -1141,13 +1143,13 @@ const addHandlerLogOut = () => {
         }
     })
 }
-
+// OK
 const addHandlerRenderListWordTable = () => {
     document.querySelector('.js-user-vocab').addEventListener('click', () => {
         renderListWordTable()
     })
 }
-
+// OK
 const addHandlerRenderAdminPage = () => {
     window.addEventListener('hashchange', () => {
         if (location.hash.slice(1) === "admin123123123") {
@@ -1155,7 +1157,7 @@ const addHandlerRenderAdminPage = () => {
         }
     })
 }
-
+// OK
 const addHandlerRenderListHistoryPlay = () => {
     document.querySelector('.js-user-history-play').addEventListener('click', () => {
         renderListHistoryPlay()
@@ -1201,7 +1203,7 @@ const addHandlerRenderAddWordInput = () => {
             // tbody.querySelector(':first-child').outerHTML = ''
             // tbody.removeChild(tbody.querySelector(':first-child'))
             document.querySelector('#inputSearchWord').removeAttribute('disabled')
-            renderSearchListWordTable()
+            renderListWordTable()
             return false
         }
         btn.textContent = "Hủy"
@@ -1294,7 +1296,7 @@ const addHandlerAddWord = () => {
         document.querySelector('#inputAddMeaning').classList.add('is-valid')
     })
 }
-
+// OK
 const addHandlerInputSearchWord = () => {
     document.querySelector('#inputSearchWord').addEventListener('input', (e) => {
         e.target.value = e.target.value.toLowerCase()
@@ -1302,7 +1304,7 @@ const addHandlerInputSearchWord = () => {
         renderSearchListWordTable()
     })
 }
-
+// Cần fix lại
 const addHandlerRenderEditWordInput = () => {
     const listWord = document.querySelectorAll('.js-list-word-table tbody tr[id]')
     for (let word of listWord) {
@@ -1435,7 +1437,7 @@ const addHandlerRenderEditWordInput = () => {
         })
     }
 }
-
+// OK
 const addHandlerPaginatePage = () => {
     document.querySelector('.js-pagination-list-word').addEventListener('click', (e) => {
         let btn = (e.target.closest('.js-btn-inline'))
@@ -1447,7 +1449,7 @@ const addHandlerPaginatePage = () => {
         renderSearchListWordTable()
     })
 }
-
+// OK
 const addHandlerRenderAllHistory = () => {
     const btn = document.querySelector('.js-btn-more-history')
     if (btn) {
