@@ -49,7 +49,6 @@ export const logout = async () => {
             headers: {
                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
             }
-
         })
         if (res.data.status === "success") {
             localStorage.removeItem('user')

@@ -6,6 +6,7 @@ import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
+import { getAllWordByCurrentUser, getAllGames, addWord } from './data'
 
 // const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -19,6 +20,7 @@ const userEl = document.querySelector('.js-user')
 let g_listWord = []
 let g_user
 let g_listStoryPlay = []
+let g_listGame = []
 
 let g_numberWordComplete
 
@@ -27,10 +29,24 @@ let g_timeSuggest
 let g_timeLive
 let g_timeOut
 
-const getListWordFromLocalStorage = async () => {
-    const list = await localStorage.getItem('listword')
-    if (!list) return
-    g_listWord = JSON.parse(list)
+const getListGame = async () => {
+    try {
+        const data = await getAllGames()
+        if (!data) return
+        g_listGame = data
+    } catch (err) {
+        showToast(err, 'danger')
+    }
+}
+
+const getListWord = async () => {
+    try {
+        const data = await getAllWordByCurrentUser()
+        if (!data) return
+        g_listWord = data
+    } catch (err) {
+        showToast(err, 'danger')
+    }
 }
 
 const getUserFromLocalStorage = async () => {
@@ -74,7 +90,7 @@ const renderView = (parentElement, markup) => {
 // ---- Custom Data -----
 const resultSearchListWord = (input) => {
     return g_listWord.filter((el) => {
-        return el.word.startsWith(input) === true
+        return el.name.startsWith(input) === true
     })
 }
 
@@ -136,10 +152,12 @@ const clearListHistoryLocalStorage = () => {
 
 
 // ----------------------- RENDER VIEW-----------------------------
+// OK
 const renderInitPage = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    await renderView(mainEl, initpageMarkup())
+    await getListGame()
+    await renderView(mainEl, initpageMarkup(g_listGame))
     // add handler
     addHandlerClickOptionGame()
 }
@@ -164,7 +182,7 @@ const renderGame1Content = async () => {
     addHandlerSuggestFirstChar()
     addHandlerSuggestWord()
 }
-
+// OK
 const renderOptionLogin = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
@@ -173,7 +191,7 @@ const renderOptionLogin = async () => {
     addHandlerRenderOptionLogin()
     addHandlerRenderSignup()
 }
-
+// OK
 const renderLoginWithEmail = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
@@ -181,7 +199,7 @@ const renderLoginWithEmail = async () => {
     // add handler
     addHandlerSubmitLogin()
 }
-
+// OK
 const renderSignup = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
@@ -189,7 +207,7 @@ const renderSignup = async () => {
     // add handler
     addHandlerSubmitSignup()
 }
-
+// OK
 const renderUserDisplay = async () => {
     clear(userEl)
     await renderView(userEl, userDisplayMarkup())
@@ -199,7 +217,7 @@ const renderUserDisplay = async () => {
     addHandlerRenderListWordTable()
     addHandlerRenderAdminPage()
 }
-
+// OK
 const renderLoginClick = async () => {
     clear(userEl)
     await renderView(userEl, loginClickMarkup())
@@ -211,13 +229,13 @@ const renderListWordTable = async () => {
     // LOAD LẦN ĐẦU THÔI
     clear(accountEl)
     renderSpinner(accountEl)
-    await getListWordFromLocalStorage()   // LOAD data lần đầu vs API
+    await getListWord()   // LOAD data lần đầu vs API
     await renderView(accountEl, listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
     addHandlerInputSearchWord()
-    addHandlerRenderEditWordInput()
-    addHandlerPaginatePage()  // OK
+    addHandlerPaginatePage()
+    // addHandlerRenderEditWordInput()
 }
 
 // LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
@@ -229,7 +247,7 @@ const renderSearchListWordTable = async () => {
     await renderView(listword, updateListWordMarkup(resultSearchListWord(inputSearch.value)))
     renderUpdatePagination()
     // add handler
-    addHandlerRenderEditWordInput()
+    // addHandlerRenderEditWordInput()
 }
 
 const renderUpdatePagination = () => {
@@ -267,45 +285,34 @@ const renderInitAdminPage = () => {
 }
 
 //------------------------ MARKUP -------------------------------
-const initpageMarkup = () => {
+// OK
+const initpageMarkup = (list) => {
+    const markup = list.map((el, index) => {
+        return `
+            <div class="col-xl-12 col-sm-12 col-lg-12">
+                <div class="card">
+                    <div class="js-game-${index + 1}">
+                        <div class="game-intro card-body">
+                            <h5 class="card-title">
+                                ${el.title}
+                                <span class="badge badge-pill badge-${el.difficulty}">${el.status}</span>
+                            </h5>
+                            <p class="card-text">
+                                ${el.description}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    }).join('')
     return `
     <div class="row">
-        <div class="col-xl-12 col-sm-12 col-lg-12">
-            <div class="card">
-                <div class="js-game-1">
-                    <div class="game-intro card-body">
-                        <h5 class="card-title">
-                            Trò chơi 1
-                            <span class="badge badge-pill badge-danger">Khó</span>
-                        </h5>
-                        <p class="card-text">
-                            Trò chơi giống như một bài kiểm tra trắc luận. Bạn sẽ nhập số lượt từ bạn muốn kiểm tra. 
-                            Sẽ có thời gian và gợi ý cho bạn để hoàn thành trò chơi. 
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-12 col-sm-12 col-lg-12">
-            <div class="card mt-3">
-                <div class="js-game-2">
-                    <div class="game-intro card-body">
-                        <h5 class="card-title">
-                            Trò chơi 2
-                            <span class="badge badge-pill badge-primary">Đang cập nhật</span>
-                        </h5>
-                        <p class="card-text">
-                            Trò chơi giống như một bài kiểm tra trắc nghiệm. Bạn sẽ nhập số lượt từ bạn muốn kiểm tra. 
-                            Sẽ chỉ có thời gian đếm ngược và không có gợi ý dành cho bạn trong quá trình thực hiện.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        ${markup}
     </div>
     `
 }
-
+//Update
 const game1Markup = () => {
 
     // g_timeSuggest = TIME_SUGGEST_GAME_1
@@ -346,7 +353,7 @@ const game1Markup = () => {
 
     `
 }
-
+//Update
 const game1ContentMarkup = (list) => {
     const length = list.length
     const random = Math.floor(Math.random() * length)
@@ -377,7 +384,7 @@ const game1ContentMarkup = (list) => {
         </button>
     `
 }
-
+// OK
 const optionLoginMarkup = () => {
     return `
     <div class="js-login-options">
@@ -394,7 +401,7 @@ const optionLoginMarkup = () => {
     </div>
     `
 }
-
+// OK
 const formLoginWithEmailMarkup = () => {
     return `
     <form class="js-form-login">
@@ -423,7 +430,7 @@ const formLoginWithEmailMarkup = () => {
     </form>
     `
 }
-
+// OK
 const formSignUpMarkup = () => {
     return `
     <form class="js-form-signup">
@@ -467,7 +474,7 @@ const formSignUpMarkup = () => {
     </form>
     `
 }
-
+// OK
 const loginClickMarkup = () => {
     return `
     <li class="nav-item mr-5">
@@ -475,11 +482,9 @@ const loginClickMarkup = () => {
     </li>
     `
 }
-
+// OK
 const userDisplayMarkup = () => {
-
     const linkAdminPage = (g_user.role === "admin" || g_user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" href="#admin123123123">Trang Admin</a>` : ''
-
     return `
     <li class="nav-item dropdown mr-5">
         <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button"
@@ -497,7 +502,7 @@ const userDisplayMarkup = () => {
     </li>
     `
 }
-
+// OK
 const listWordTableMarkup = (list) => {
     let markupPagi
     const numPages = Math.ceil(list.length / RESULT_PER_PAGE)
@@ -507,9 +512,9 @@ const listWordTableMarkup = (list) => {
     const markupList = list.map((el, index) => {
 
         return `
-        <tr id="${el.id}">
+        <tr id="${el._id}">
             <td>    
-                ${el.word}
+                ${el.name}
             </td>
             <td class="fix-line-css">
                 ${el.meaning}
@@ -598,7 +603,7 @@ const updateListWordMarkup = (list) => {
         return `
         <tr id="${el.id}">
             <td>    
-                ${el.word}
+                ${el.name}
             </td>
             <td class="fix-line-css">
             ${el.meaning}
@@ -831,7 +836,7 @@ const adminPageInitMarkup = () => {
 
 // ------------------------- ADD HANDLER -------------------------------
 // Init Page Load
-
+// Update
 const addHandlerClickOptionGame = async () => {
     const btnGame1 = document.querySelector('.js-game-1')
     const btnGame2 = document.querySelector('.js-game-2')
@@ -841,7 +846,7 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         await getListHistoryPlayFromLocalStorage()
-        await getListWordFromLocalStorage()
+        await getListWord()
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
@@ -857,7 +862,7 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         await getListHistoryPlayFromLocalStorage()
-        await getListWordFromLocalStorage()
+        await getListWord()
 
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
@@ -1052,6 +1057,7 @@ const addHandlerSuggestWord = () => {
     })
 }
 // Auth + User
+// Update
 const addHandlerRenderOptionLogin = () => {
     const btnLoginwithEmail = document.querySelector('.js-btn-login-email')
     const btnLoginwithFacebook = document.querySelector('.js-btn-login-facebook')
@@ -1061,18 +1067,21 @@ const addHandlerRenderOptionLogin = () => {
     })
 }
 
+// OK
 const addHandlerRenderSignup = () => {
     document.querySelector('.js-signup').addEventListener('click', (e) => {
         renderSignup()
     })
 }
 
+// OK
 const addHandlerClickLogIn = () => {
     document.querySelector('.js-login').addEventListener('click', () => {
         renderOptionLogin()
     })
 }
 
+// OK
 const addHandlerSubmitSignup = () => {
     document.querySelector('.js-form-signup').addEventListener('submit', async (e) => {
         e.preventDefault()
@@ -1093,6 +1102,7 @@ const addHandlerSubmitSignup = () => {
     })
 }
 
+// OK
 const addHandlerSubmitLogin = () => {
     document.querySelector('.js-form-login').addEventListener('submit', async (e) => {
         e.preventDefault()
@@ -1110,6 +1120,7 @@ const addHandlerSubmitLogin = () => {
     })
 }
 
+// OK
 const addHandlerLogOut = () => {
     document.querySelector('.js-logout').addEventListener('click', async (e) => {
         try {
@@ -1152,6 +1163,7 @@ const addHandlerRenderListHistoryPlay = () => {
 }
 
 // List word table
+// OK
 const addHandlerRenderAddWordInput = () => {
     document.querySelector('.js-btn-add-word').addEventListener('click', (e) => {
         const btn = e.target
@@ -1174,7 +1186,7 @@ const addHandlerRenderAddWordInput = () => {
                     <textarea id= "inputAddMeaning" class="form-control" 
                         autocomplete="off" aria-describedby="inputAddMeaningHelp" rows="1"></textarea>
                     <div class="invalid-feedback">
-                        Tối đa 50 ký tự.
+                        Tối đa 100 ký tự.
                     </div>
                     <small id="inputAddMeaningHelp" class="form-text text-danger"></small>
                 </div>
@@ -1201,7 +1213,7 @@ const addHandlerRenderAddWordInput = () => {
     })
 
 }
-
+// OK
 const addHandlerAddWord = () => {
     const handleAddWordSuccess = (newWord) => {
         document.querySelector('#inputAddWord').value = ''
@@ -1209,43 +1221,34 @@ const addHandlerAddWord = () => {
         document.querySelector('#inputAddMeaning').value = ''
         document.querySelector('#inputAddWordHelp').textContent = ''
         document.querySelector('#inputAddMeaningHelp').textContent = ''
-        document.querySelector('#inputAddWord').classList.remove('is-invalid')
-        document.querySelector('#inputAddMeaning').classList.remove('is-invalid')
+        document.querySelector('#inputAddWord').classList.remove('is-valid')
+        document.querySelector('#inputAddMeaning').classList.remove('is-valid')
         const markup = `
-        
         <tr>
-            <td>${newWord.word}</td>
-            <td>${newWord.meaning = newWord.meaning.length > 20 ? newWord.meaning.slice(0, 20) + "..." : newWord.meaning}</td>
+            <td>${newWord.name}</td>
+            <td>${newWord.meaning}</td>
             <td>
                 <button type="button" class="btn btn-outline-success btn-sm disabled">New</button>
             </td>
         </tr>
         `
-        // console.log(document.querySelector('.js-list-word-table tbody').firstElementChild)
         document.querySelector('.js-list-word-table tbody').firstElementChild.insertAdjacentHTML('afterend', markup)
     }
-    const handleAddWord = () => {
-        const word = document.querySelector('#inputAddWord').value.trim()
-        const meaning = document.querySelector('#inputAddMeaning').value.trim()
-        if (!word) {
-            document.querySelector('#inputAddWordHelp').textContent = 'Bạn cần nhập trường này.'
+    const handleAddWord = async () => {
+        const inputWord = document.querySelector('#inputAddWord')
+        const inputMeaning = document.querySelector('#inputAddMeaning')
+        if (!inputWord.classList.contains('is-valid') || !inputMeaning.classList.contains('is-valid')) {
             return
         }
-        if (!meaning) {
-            document.querySelector('#inputAddMeaningHelp').textContent = 'Bạn cần nhập trường này.'
-            return
+        const name = inputWord.value.trim()
+        const meaning = inputMeaning.value.trim()
+        try {
+            await addWord({ name, meaning })
+            handleAddWordSuccess({ name, meaning })
         }
-        if (!isWordUnique(word, g_listWord)) {
-            document.querySelector('#inputAddWord').classList.add('is-invalid')
-            return
+        catch (err) {
+            showToast(err, 'danger')
         }
-        if (!existMaxChar(meaning, 50)) {
-            document.querySelector('#inputAddMeaning').classList.add('is-invalid')
-            return
-        }
-        // Add word success
-        addWordToLocalStorage({ word, meaning })
-        handleAddWordSuccess({ word, meaning })
     }
     document.querySelector('.js-add-word').addEventListener('click', (e) => {
         handleAddWord()
@@ -1255,6 +1258,7 @@ const addHandlerAddWord = () => {
             document.querySelector('.js-add-word').click()
         }
     })
+
     document.querySelector('#inputAddWord').addEventListener('keypress', (e) => {
         if (e.key === "Enter") {
             document.querySelector('#inputAddMeaning').focus()
@@ -1262,6 +1266,32 @@ const addHandlerAddWord = () => {
     })
     document.querySelector('#inputAddWord').addEventListener('input', (e) => {
         e.target.value = e.target.value.toLowerCase()
+        const name = e.target.value.trim()
+        if (!name) {
+            document.querySelector('#inputAddWordHelp').textContent = 'Không được bỏ trống.'
+            return
+        }
+        document.querySelector('#inputAddWordHelp').textContent = ''
+        if (!isWordUnique(name, g_listWord)) {
+            document.querySelector('#inputAddWord').classList.add('is-invalid')
+            return
+        }
+        document.querySelector('#inputAddWord').classList.remove('is-invalid')
+        document.querySelector('#inputAddWord').classList.add('is-valid')
+    })
+    document.querySelector('#inputAddMeaning').addEventListener('input', (e) => {
+        const meaning = e.target.value.trim()
+        if (!meaning) {
+            document.querySelector('#inputAddMeaningHelp').textContent = 'Không được bỏ trống.'
+            return
+        }
+        document.querySelector('#inputAddMeaningHelp').textContent = ''
+        if (!existMaxChar(meaning, 100)) {
+            document.querySelector('#inputAddMeaning').classList.add('is-invalid')
+            return
+        }
+        document.querySelector('#inputAddMeaning').classList.remove('is-invalid')
+        document.querySelector('#inputAddMeaning').classList.add('is-valid')
     })
 }
 

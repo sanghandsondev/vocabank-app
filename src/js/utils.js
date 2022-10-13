@@ -5,9 +5,9 @@ export const isEmail = (value) => {
     return regex.test(value)
 }
 
-export const isWordUnique = (word, list) => {
+export const isWordUnique = (name, list) => {
     const isFind = list.some((el, index) => {
-        return el.word === word
+        return el.name === name
     })
     return !isFind
 }
