@@ -11,10 +11,13 @@
   "devDependencies": {
     "@parcel/transformer-sass": "^2.7.0",
     "@types/core-js": "^2.5.5",
-    "parcel": "^2.7.0"
+    "buffer": "^6.0.3",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "axios": "^1.1.2",
     "core-js": "^3.25.4",
     "regenerator-runtime": "^0.13.9"
   }

@@ -1071,12 +1071,13 @@ const addHandlerClickLogIn = () => {
 const addHandlerSubmitLogin = () => {
     document.querySelector('.js-form-login').addEventListener('submit', async (e) => {
         e.preventDefault()
-        await login({ username: "Hoàng Trung Sang", email: "sangank@gmail.com", rule: "admin" })
-        await getUserFromLocalStorage()
-        showToast('Đăng nhập thành công.', 'success')
-        renderUserDisplay()
-        // renderListWordTable()
-        renderListHistoryPlay()
+        const email = document.querySelector('#inputLoginEmail').value.trim()
+        const password = document.querySelector('#inputLoginPassWord').value.trim()
+        await login({ email, password })
+        // await getUserFromLocalStorage()
+        // showToast('Đăng nhập thành công.', 'success')
+        // renderUserDisplay()
+        // renderListHistoryPlay()
     })
 }
 
