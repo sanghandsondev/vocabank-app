@@ -3,7 +3,7 @@ import '@babel/polyfill'
 // import 'regenerator-runtime/runtime'        // polyfilling async/await
 import { RESULT_PER_PAGE } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
-import { login, logout } from './auth'
+import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
 
@@ -34,6 +34,8 @@ const getListWordFromLocalStorage = async () => {
 }
 
 const getUserFromLocalStorage = async () => {
+    // const token = document.cookie.jwt
+    // console.log(token)
     const user = await localStorage.getItem('user')
     if (!user) g_user = {}
     g_user = JSON.parse(user)
@@ -185,6 +187,7 @@ const renderSignup = async () => {
     renderSpinner(accountEl)
     await renderView(accountEl, formSignUpMarkup())
     // add handler
+    addHandlerSubmitSignup()
 }
 
 const renderUserDisplay = async () => {
@@ -435,26 +438,26 @@ const formSignUpMarkup = () => {
             </div>
         </div>
         <div class="form-group">
-            <label for="inputSignupUsername">Họ và Tên</label>
-            <input type="text" class="form-control" id="inputSignupUsername"
-                aria-describedby="inputSignupUsernameHelp" placeholder="Họ và tên của bạn..."
+            <label for="inputSignupName">Họ và Tên</label>
+            <input type="text" class="form-control" id="inputSignupName"
+                aria-describedby="inputSignupNameHelp" placeholder="Họ và tên của bạn..."
                 autocomplete="off">
             <div class="invalid-feedback">
                 Trường này nhập ít nhất 4 ký tự, tối đa 30 kí tự.
             </div>
         </div>
         <div class="form-group">
-            <label for="inputLoginPassWord">Mật khẩu</label>
-            <input type="password" class="form-control" id="inputLoginPassWord"
-                placeholder="Mật khẩu...">
+            <label for="inputSignupPassWord">Mật khẩu</label>
+            <input type="password" class="form-control" id="inputSignupPassWord"
+                placeholder="Mật khẩu..." autocomplete="off">
             <div class="invalid-feedback">
                 Mật khẩu nhập ít nhất 6 ký tự.
             </div>
         </div>
         <div class="form-group">
-            <label for="inputLoginPassWord">Xác nhận mật khẩu</label>
-            <input type="password" class="form-control" id="inputLoginPassWord"
-                placeholder="Xác nhận mật khẩu...">
+            <label for="inputSignupPassWordConfirm">Xác nhận mật khẩu</label>
+            <input type="password" class="form-control" id="inputSignupPassWordConfirm"
+                placeholder="Xác nhận mật khẩu..." autocomplete="off">
             <div class="invalid-feedback">
                 Mật khẩu không trùng khớp.
             </div>
@@ -474,12 +477,14 @@ const loginClickMarkup = () => {
 }
 
 const userDisplayMarkup = () => {
-    const linkAdminPage = g_user.rule === "admin" ? `<a class="dropdown-item js-user-admin-page" href="#admin123123123">Trang Admin</a>` : ''
+
+    const linkAdminPage = (g_user.role === "admin" || g_user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" href="#admin123123123">Trang Admin</a>` : ''
+
     return `
     <li class="nav-item dropdown mr-5">
         <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            ${g_user.username}
+            ${g_user.name}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item js-user-info" href="#">Trang cá nhân</a>
@@ -1068,29 +1073,61 @@ const addHandlerClickLogIn = () => {
     })
 }
 
+const addHandlerSubmitSignup = () => {
+    document.querySelector('.js-form-signup').addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const passwordConfirm = document.querySelector('#inputSignupPassWordConfirm').value.trim()
+        const password = document.querySelector('#inputSignupPassWord').value.trim()
+        const email = document.querySelector('#inputSignupEmail').value.trim()
+        const name = document.querySelector('#inputSignupName').value.trim()
+        try {
+            await signup({ email, name, password, passwordConfirm })
+            await getUserFromLocalStorage()
+            showToast('Đăng ký tài khoản thành công.', 'success')
+            renderUserDisplay()
+            renderListHistoryPlay()
+        } catch (err) {
+            showToast(err, 'danger')
+        }
+
+    })
+}
+
 const addHandlerSubmitLogin = () => {
     document.querySelector('.js-form-login').addEventListener('submit', async (e) => {
         e.preventDefault()
         const email = document.querySelector('#inputLoginEmail').value.trim()
         const password = document.querySelector('#inputLoginPassWord').value.trim()
-        await login({ email, password })
-        // await getUserFromLocalStorage()
-        // showToast('Đăng nhập thành công.', 'success')
-        // renderUserDisplay()
-        // renderListHistoryPlay()
+        try {
+            await login({ email, password })
+            await getUserFromLocalStorage()
+            showToast('Đăng nhập thành công.', 'success')
+            renderUserDisplay()
+            renderListHistoryPlay()
+        } catch (err) {
+            showToast(err, 'danger')
+        }
     })
 }
 
 const addHandlerLogOut = () => {
-    document.querySelector('.js-logout').addEventListener('click', (e) => {
-        logout()
-        // g_user = {}
-        getUserFromLocalStorage()
-        g_listWord = []
-        showToast('Bạn đã đăng xuất', 'info')
-        renderLoginClick()
-        renderOptionLogin()
-        renderInitPage()
+    document.querySelector('.js-logout').addEventListener('click', async (e) => {
+        try {
+            await logout()
+            await getUserFromLocalStorage()
+            showToast('Bạn đã đăng xuất', 'info')
+            g_listWord = []
+            g_listStoryPlay = []
+            renderLoginClick()
+            renderOptionLogin()
+            renderInitPage()
+        } catch (err) {
+            showToast(err, 'danger')
+            localStorage.removeItem('user')
+            window.setTimeout(() => {
+                location.assign('/')               // chuyển pages sau 2s
+            }, 2000)
+        }
     })
 }
 
