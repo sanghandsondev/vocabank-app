@@ -51,3 +51,34 @@ export const addWord = async (data) => {
         throw err.response.data.message
     }
 }
+
+export const removeWord = async (id) => {
+    try {
+        const res = await axios({
+            method: 'DELETE',
+            url: `${BACKEND_URL}words/${id}`,
+            headers: {
+                'authorization': `Bearer ${document.cookie.split('=')[1]}`
+            },
+        })
+        // console.log(`${BACKEND_URL}words/${id}`)
+    } catch (err) {
+        throw err.response.data.message
+    }
+}
+
+export const updateWord = async (data, id) => {
+    try {
+        const res = await axios({
+            method: 'POST',
+            url: `${BACKEND_URL}words/${id}`,
+            headers: {
+                'authorization': `Bearer ${document.cookie.split('=')[1]}`
+            },
+            data
+        })
+        // console.log(`${BACKEND_URL}words/${id}`)
+    } catch (err) {
+        throw err.response.data.message
+    }
+}

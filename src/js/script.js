@@ -1,12 +1,13 @@
-import 'core-js/stable'                     // polyfilling everything else
-import '@babel/polyfill'
+// import 'core-js/stable'                     // polyfilling everything else
+// import '@babel/polyfill'
 // import 'regenerator-runtime/runtime'        // polyfilling async/await
 import { RESULT_PER_PAGE } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
-import { getAllWordByCurrentUser, getAllGames, addWord } from './data'
+import { getAllWordByCurrentUser, getAllGames, addWord, removeWord, updateWord } from './data'
+import { updateWord } from '../../../backend/controllers/wordController'
 
 // const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -94,44 +95,41 @@ const resultSearchListWord = (input) => {
     })
 }
 
-
-// Word Data
-const persistListWordLocalStorage = () => {
-    localStorage.setItem('listword', JSON.stringify(g_listWord))
-}
-
 const findWordById = (id) => {
     return g_listWord.find((el) => {
-        return el.id === id
+        return el._id == id
     })
 }
 
-const addWordToLocalStorage = (data) => {
-    data.id = Date.now()
-    g_listWord.push(data)
-    persistListWordLocalStorage()
+
+// Word Data
+
+const removeWordNow = async (id) => {
+    try {
+        await removeWord(id)
+        const word = findWordById(id)
+        if (!word) return
+        const index = g_listWord.indexOf(word)
+        g_listWord.splice(index, 1)
+    } catch (err) {
+        // showToast(err, 'danger')
+        console.log()
+    }
 }
 
-const clearListWordLocalStorage = () => {
-    g_listWord = []
-    localStorage.removeItem('listword')
-}
+const updateWordNow = async (data, id) => {
+    try {
+        await updateWord(data, id)
+        const word = findWordById(id)
+        if (!word) return
+        const index = g_listWord.indexOf(word)
+        g_listWord[index].name = newWord.name
+        g_listWord[index].meaning = newWord.meaning
 
-const removeWordToLocalStorage = (id) => {
-    const word = findWordById(id)
-    if (!word) return
-    const index = g_listWord.indexOf(word)
-    g_listWord.splice(index, 1)
-    persistListWordLocalStorage()
-}
+    } catch (err) {
+        showToast(err, 'danger')
+    }
 
-const updateWordToLocalStorage = (newWord, id) => {
-    const word = findWordById(id)
-    if (!word) return
-    const index = g_listWord.indexOf(word)
-    g_listWord[index].word = newWord.word
-    g_listWord[index].meaning = newWord.meaning
-    persistListWordLocalStorage()
 }
 
 // History Play Data
@@ -230,14 +228,12 @@ const renderListWordTable = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
     await getListWord()   // LOAD data lần đầu vs API
-    console.log(g_listWord)
-
     await renderView(accountEl, listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
     addHandlerInputSearchWord()
     addHandlerPaginatePage()
-    // addHandlerRenderEditWordInput()
+    addHandlerRenderEditWordInput()
 }
 
 // LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
@@ -249,7 +245,7 @@ const renderSearchListWordTable = async () => {
     await renderView(listword, updateListWordMarkup(resultSearchListWord(inputSearch.value)))
     renderUpdatePagination()
     // add handler
-    // addHandlerRenderEditWordInput()
+    addHandlerRenderEditWordInput()
 }
 
 const renderUpdatePagination = () => {
@@ -603,7 +599,7 @@ const updateListWordMarkup = (list) => {
     `
     const markup = list.map((el, index) => {
         return `
-        <tr id="${el.id}">
+        <tr id="${el._id}">
             <td>    
                 ${el.name}
             </td>
@@ -1309,23 +1305,22 @@ const addHandlerRenderEditWordInput = () => {
     const listWord = document.querySelectorAll('.js-list-word-table tbody tr[id]')
     for (let word of listWord) {
         word.addEventListener('click', (e) => {
-            let id = Number(word.getAttribute('id'))
+            let id = word.getAttribute('id')
             const btnRemoveWord = e.target.closest('.js-btn-remove-word')
-            // console.log(id)
-            // console.log(btnRemoveWord)
             if (btnRemoveWord) {
                 // Remove Word
-                document.querySelector('.js-btn-confirm-remove-word').addEventListener('click', (e) => {
-                    removeWordToLocalStorage(id)
+                document.querySelector('.js-btn-confirm-remove-word').addEventListener('click', async (e) => {
                     $('#confirmRemoveWordModal').modal('hide')
-                    renderSearchListWordTable()
-                    // word.classList.add('hidden')
+                    await removeWordNow(id)
+                    await renderSearchListWordTable()
+                    console.log(id)
+                    return
                 })
                 return
             }
             // Update Word
             let currentWord = findWordById(id)
-            let initWord = currentWord.word
+            let initWord = currentWord.name
             let initMeaning = currentWord.meaning
             const markup = `
             <tr>
@@ -1358,7 +1353,7 @@ const addHandlerRenderEditWordInput = () => {
                 </td>
             </tr>
             `
-            // word.outerHTML = markup
+            // // word.outerHTML = markup
             const newMarkup = document.createElement('tr')
             newMarkup.innerHTML = markup
             word.parentElement.replaceChild(newMarkup, word)
@@ -1409,13 +1404,12 @@ const addHandlerRenderEditWordInput = () => {
                 inputEditMeaning.classList.remove('is-invalid')
                 inputEditMeaning.classList.add('is-valid')
             })
-            // console.log(inputEditWord, inputEditMeaning)
 
             document.querySelector('.js-btn-confirm-edit-word').addEventListener('click', async () => {
                 const variWord = inputEditWord.value.trim()
                 const variMeaning = inputEditMeaning.value.trim()
                 if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
-                    await updateWordToLocalStorage({ word: variWord, meaning: variMeaning }, id)
+                    await updateWordNow({ name: variWord, meaning: variMeaning }, id)
                     showToast('Cập nhật thành công.', 'success')
                     renderSearchListWordTable()
                     return
@@ -1423,7 +1417,6 @@ const addHandlerRenderEditWordInput = () => {
                 // thông báo Cập nhật thất bại
                 showToast('Cập nhật thất bại.', 'danger')
                 renderSearchListWordTable()
-                // newMarkup.parentElement.replaceChild(word, newMarkup)
                 return
             })
             const anotherWord = document.querySelectorAll(`.js-list-word-table tbody tr[id]`)

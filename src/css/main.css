@@ -35,15 +35,16 @@
 }
 
 .footer__body {
-    padding: 10px;
+    padding: 4px;
 }
 
 /* SIDEBAR ADMIN */
 .sidebar {
     min-height: 100vh;
-
 }
 
+
+/* MAIN  */
 .content {
     padding: 80px 4rem 0 9rem;
     background-color: #F0F2F5;
