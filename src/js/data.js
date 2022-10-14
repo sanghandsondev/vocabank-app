@@ -102,21 +102,6 @@ export const addHistory = async (data, gameId) => {
     }
 }
 
-// export const getHistoryOfAGame = async (gameId) => {
-//     try {
-//         const res = await axios({
-//             method: 'GET',
-//             url: `${BACKEND_URL}games/${gameId}/histories`,
-//             headers: {
-//                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
-//             }
-//         })
-//         return res.data.data.histories
-//     } catch (err) {
-//         throw err.response.data.message
-//     }
-// }
-
 export const getHistoryOfCurrentUser = async () => {
     try {
         const res = await axios({
@@ -131,3 +116,18 @@ export const getHistoryOfCurrentUser = async () => {
         throw err.response.data.message
     }
 }
+
+// export const getHistoryOfAGame = async (gameId) => {
+//     try {
+//         const res = await axios({
+//             method: 'GET',
+//             url: `${BACKEND_URL}games/${gameId}/histories`,
+//             headers: {
+//                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
+//             }
+//         })
+//         return res.data.data.histories
+//     } catch (err) {
+//         throw err.response.data.message
+//     }
+// }
