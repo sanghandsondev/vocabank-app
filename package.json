@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html --dist-dir ./dist"
+    "build": "parcel build index.html"
   },
   "author": "",
   "license": "ISC",
@@ -12,18 +12,14 @@
     "@parcel/transformer-sass": "^2.7.0",
     "@types/core-js": "^2.5.5",
     "buffer": "^6.0.3",
-    "crypto-browserify": "^3.12.0",
     "parcel": "^2.7.0",
     "process": "^0.11.10"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "@parcel/resolver-default": "^2.7.0",
     "axios": "^1.1.2",
     "core-js": "^3.25.4",
     "regenerator-runtime": "^0.13.9"
-  },
-  "browser": {
-    "crypto": false,
-    "process": false
   }
 }

@@ -70,7 +70,7 @@ export const removeWord = async (id) => {
 export const updateWord = async (data, id) => {
     try {
         const res = await axios({
-            method: 'POST',
+            method: 'PATCH',
             url: `${BACKEND_URL}words/${id}`,
             headers: {
                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
@@ -78,6 +78,55 @@ export const updateWord = async (data, id) => {
             data
         })
         // console.log(`${BACKEND_URL}words/${id}`)
+        // console.log('OK')
+    } catch (err) {
+        throw err.response.data.message
+    }
+}
+
+export const addHistory = async (data, gameId) => {
+    try {
+        const res = await axios({
+            method: 'POST',
+            url: `${BACKEND_URL}games/${gameId}/histories`,
+            headers: {
+                'authorization': `Bearer ${document.cookie.split('=')[1]}`
+            },
+            data
+        })
+        if (res.data.status === "success") {
+            return
+        }
+    } catch (err) {
+        throw err.response.data.message
+    }
+}
+
+// export const getHistoryOfAGame = async (gameId) => {
+//     try {
+//         const res = await axios({
+//             method: 'GET',
+//             url: `${BACKEND_URL}games/${gameId}/histories`,
+//             headers: {
+//                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
+//             }
+//         })
+//         return res.data.data.histories
+//     } catch (err) {
+//         throw err.response.data.message
+//     }
+// }
+
+export const getHistoryOfCurrentUser = async () => {
+    try {
+        const res = await axios({
+            method: 'GET',
+            url: `${BACKEND_URL}histories`,
+            headers: {
+                'authorization': `Bearer ${document.cookie.split('=')[1]}`
+            }
+        })
+        return res.data.data.histories
     } catch (err) {
         throw err.response.data.message
     }

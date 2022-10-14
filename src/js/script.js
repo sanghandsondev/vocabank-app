@@ -6,8 +6,7 @@ import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
-import { getAllWordByCurrentUser, getAllGames, addWord, removeWord, updateWord } from './data'
-import { updateWord } from '../../../backend/controllers/wordController'
+import { getAllWordByCurrentUser, getAllGames, addWord, removeWord, updateWord, addHistory, getHistoryOfCurrentUser } from './data'
 
 // const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -20,9 +19,10 @@ const userEl = document.querySelector('.js-user')
 // LOCAL MODAL STATE
 let g_listWord = []
 let g_user
-let g_listStoryPlay = []
+let g_listHistoryPlay = []
 let g_listGame = []
 
+let g_gameId
 let g_numberWordComplete
 
 let g_timeTest
@@ -58,13 +58,60 @@ const getUserFromLocalStorage = async () => {
     g_user = JSON.parse(user)
 }
 
-const getListHistoryPlayFromLocalStorage = async () => {
-
-    const list = await localStorage.getItem('history')
-    if (!list) return
-    g_listStoryPlay = JSON.parse(list)
+const getListHistoryOfCurrentUser = async () => {
+    try {
+        const data = await getHistoryOfCurrentUser()
+        if (!data) return
+        g_listHistoryPlay = data
+    }
+    catch (err) {
+        showToast(err, 'danger')
+    }
 }
 
+// ---- Custom Data -----
+// OK
+const resultSearchListWord = (input) => {
+    return g_listWord.filter((el) => {
+        return el.name.startsWith(input) === true
+    })
+}
+// OK
+const findWordById = (id) => {
+    return g_listWord.find((el) => {
+        return el._id == id
+    })
+}
+// OK
+const removeWordNow = async (id) => {
+    try {
+        await removeWord(id)
+        // console.log('OK')
+        const word = findWordById(id)
+        if (!word) return
+        const index = g_listWord.indexOf(word)
+        g_listWord.splice(index, 1)
+    } catch (err) {
+        // showToast(err, 'danger')
+        console.log()
+    }
+}
+// OK
+const updateWordNow = async (data, id) => {
+    try {
+        await updateWord(data, id)
+        showToast('Cập nhật thành công.', 'success')
+        const word = findWordById(id)
+        if (!word) return
+        const index = g_listWord.indexOf(word)
+        g_listWord[index].name = data.name
+        g_listWord[index].meaning = data.meaning
+
+    } catch (err) {
+        showToast(err, 'danger')
+    }
+
+}
 
 // MAIN CONTROLLER
 const clear = (parentElement) => {
@@ -88,67 +135,6 @@ const renderView = (parentElement, markup) => {
     parentElement.insertAdjacentHTML('afterbegin', markup)
 }
 
-// ---- Custom Data -----
-const resultSearchListWord = (input) => {
-    return g_listWord.filter((el) => {
-        return el.name.startsWith(input) === true
-    })
-}
-
-const findWordById = (id) => {
-    return g_listWord.find((el) => {
-        return el._id == id
-    })
-}
-
-
-// Word Data
-
-const removeWordNow = async (id) => {
-    try {
-        await removeWord(id)
-        const word = findWordById(id)
-        if (!word) return
-        const index = g_listWord.indexOf(word)
-        g_listWord.splice(index, 1)
-    } catch (err) {
-        // showToast(err, 'danger')
-        console.log()
-    }
-}
-
-const updateWordNow = async (data, id) => {
-    try {
-        await updateWord(data, id)
-        const word = findWordById(id)
-        if (!word) return
-        const index = g_listWord.indexOf(word)
-        g_listWord[index].name = newWord.name
-        g_listWord[index].meaning = newWord.meaning
-
-    } catch (err) {
-        showToast(err, 'danger')
-    }
-
-}
-
-// History Play Data
-const persistListHistory = () => {
-    localStorage.setItem('history', JSON.stringify(g_listStoryPlay))
-}
-
-const addNewHistoryPlay = (data) => {
-    data.dateCompleted = new Date().toLocaleString("en-US")
-    g_listStoryPlay.push(data)
-    persistListHistory()
-}
-
-const clearListHistoryLocalStorage = () => {
-    g_listStoryPlay = []
-    localStorage.removeItem('history')
-}
-
-
 // ----------------------- RENDER VIEW-----------------------------
 // OK
 const renderInitPage = async () => {
@@ -168,7 +154,7 @@ const renderGame1 = async () => {
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm()
 }
-
+// OK
 const renderGame1Content = async () => {
     const contentEl = document.querySelector('.js-game1-content')
     clear(contentEl)
@@ -222,7 +208,7 @@ const renderLoginClick = async () => {
     //add handler
     addHandlerClickLogIn()
 }
-
+// OK
 const renderListWordTable = async () => {
     // LOAD LẦN ĐẦU THÔI
     clear(accountEl)
@@ -235,7 +221,7 @@ const renderListWordTable = async () => {
     addHandlerPaginatePage()
     addHandlerRenderEditWordInput()
 }
-
+// OK
 // LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
 const renderSearchListWordTable = async () => {
     const listword = document.querySelector('.js-list-word-table')
@@ -247,7 +233,7 @@ const renderSearchListWordTable = async () => {
     // add handler
     addHandlerRenderEditWordInput()
 }
-
+// OK
 const renderUpdatePagination = () => {
     const paginationEl = document.querySelector('.js-pagination-list-word')
     const inputSearch = document.querySelector('#inputSearchWord')
@@ -260,8 +246,8 @@ const renderUpdatePagination = () => {
 const renderListHistoryPlay = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    await getListHistoryPlayFromLocalStorage()
-    await renderView(accountEl, listHistoryPlayMarkup(g_listStoryPlay))
+    await getListHistoryOfCurrentUser()
+    await renderView(accountEl, listHistoryPlayMarkup(g_listHistoryPlay))
     // add handler
     addHandlerRenderAllHistory()
 }
@@ -269,11 +255,12 @@ const renderListHistoryPlay = async () => {
 const renderAllHistory = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    await renderView(mainEl, allHistoryPlayMarkup(g_listStoryPlay))
+    await renderView(mainEl, allHistoryPlayMarkup(g_listHistoryPlay))
     // add handler
 }
 
 //--------------Admin ----------------------
+// OK
 const renderInitAdminPage = () => {
     // clear(headerEl)
     clear(contentEl)
@@ -289,7 +276,7 @@ const initpageMarkup = (list) => {
         return `
             <div class="col-xl-12 col-sm-12 col-lg-12 mb-3">
                 <div class="card">
-                    <div class="js-game-${index + 1}">
+                    <div id="${el._id}" class="js-game-${index + 1}">
                         <div class="game-intro card-body">
                             <h5 class="card-title">
                                 ${el.title}
@@ -694,7 +681,7 @@ const updatePaginationMarkup = (list) => {
     // Page 1, and there are NO other pages
     return ''
 }
-
+// OK
 const listHistoryPlayMarkup = (list) => {
     const length = list.length
     let derseList = []
@@ -704,11 +691,12 @@ const listHistoryPlayMarkup = (list) => {
         derseList.push(list[i])
     }
     const markupList = derseList.map((el) => {
+        const date = el.dateCompleted.split('.')[0]
         return `
             <tr>
-                <td class="text-${el.difficulty}">${el.title}</td>
-                <td class="text-center">${el.timeTest}</td>
-                <td>${el.dateCompleted}</td>
+                <td class="text-${el.game.difficulty}">${el.game.title}</td>
+                <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
+                <td>${date}</td>
             </tr>
         `
     }).join('')
@@ -716,7 +704,7 @@ const listHistoryPlayMarkup = (list) => {
         <table class="table  js-list-history-table">
             <thead>
                 <tr>
-                    <th scope="col">Trò chơi</th>
+                    <th scope="col">Nguời chơi</th>
                     <th scope="col">Từ kiểm tra</th>
                     <th scope="col">Ngày hoàn thành</th>
                 </tr>
@@ -729,7 +717,7 @@ const listHistoryPlayMarkup = (list) => {
     `
 }
 
-// CẦN FIX LẠI
+// CẦN FIX THÊM
 const allHistoryPlayMarkup = (list) => {
     const length = list.length
     const derseList = list.map((el, index) => {
@@ -738,9 +726,9 @@ const allHistoryPlayMarkup = (list) => {
     const markupList = derseList.map((el, index) => {
         return `
         <tr>
-            <td class="text-${el.difficulty} text-center">${el.title}</td>
-            <td class="text-center">${el.timeTest}</td>
-            <td class="text-center">${el.dateCompleted}</td>
+            <td class="text-${el.game.difficulty} text-center">${el.game.title}</td>
+            <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
+            <td class="text-center">${el.dateCompleted.split('.')[0]}</td>
         </tr>
         `
     }).join('')
@@ -844,40 +832,38 @@ const addHandlerClickOptionGame = async () => {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
             return
         }
-        if (!g_listWord) {
-            await getListWord()
-        }
-        // await getListHistoryPlayFromLocalStorage()
+        await getListWord()
         if (g_listWord.length < 10) {
             showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
             return
         }
-        renderGame1()
-        clear(accountEl)
+        g_gameId = btnGame1.getAttribute('id')
+        console.log(g_gameId)
         clear(userEl)
+        clear(accountEl)
+        renderGame1()
     })
 
-    btnGame2.addEventListener('click', async () => {
-        if (!g_user) {
-            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
-            return
-        }
-        if (!g_listWord) {
-            await getListWord()
-        }
-        // await getListHistoryPlayFromLocalStorage()
+    // btnGame2.addEventListener('click', async () => {
+    //     if (!g_user) {
+    //         showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+    //         return
+    //     }
+    //     await getListWord()
 
-        if (g_listWord.length < 10) {
-            showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
-            return
-        }
-        showToast('Trò chơi đang trong giai đoạn phát triển. Vui lòng thử lại sau.', 'info')
-        // renderGame2()
-    })
+    //     if (g_listWord.length < 10) {
+    //         showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
+    //         return
+    //     }
+
+    //     showToast('Trò chơi đang trong giai đoạn phát triển. Vui lòng thử lại sau.', 'info')
+    //     // gameId = btnGame2.getAttribute('id')
+    //     // renderGame2()
+    // })
 }
 
-
 // Game 1
+// OK
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
         document.querySelector('#inputTimeTest').focus()
@@ -886,7 +872,7 @@ const addHandlerFocusTimeTestInput = () => {
         document.querySelector('#inputTimeTest').focus()
     })
 }
-
+// OK
 const addHandlerSubmitTimeTestForm = () => {
     document.querySelector('.js-form-time-test').addEventListener('submit', (e) => {
         e.preventDefault()
@@ -933,8 +919,6 @@ const addHandlerSubmitTimeTestForm = () => {
             }
             g_timeOut -= 1000
         }, 1000)
-        // clear interval
-        // const stopTimer = clearInterval(myTimer)
 
         $('#timeTestModal').modal('hide')
         document.querySelector('.js-time-game1').classList.remove('hidden')
@@ -946,15 +930,15 @@ const addHandlerSubmitTimeTestForm = () => {
         document.querySelector('#inputWordGame1').focus()
     })
 }
-
+// OK
 const addHandlerInputWordGame1 = () => {
     document.querySelector('#inputWordGame1').addEventListener('input', (e) => {
         e.target.classList.remove('is-invalid')
     })
 }
-
+// OK
 const addHandlerSubmitCheckAnswerForm = () => {
-    document.querySelector('.js-form-check-answer-game1').addEventListener('submit', (e) => {
+    document.querySelector('.js-form-check-answer-game1').addEventListener('submit', async (e) => {
         e.preventDefault()
         const index = document.querySelector('.js-btn-check-answer').getAttribute('id')
         // console.log(index)
@@ -967,7 +951,7 @@ const addHandlerSubmitCheckAnswerForm = () => {
             return el.meaning === meaning
         })
         const checkAns = listAnswer.some((el) => {
-            return el.word === inputWord.value.trim()
+            return el.name === inputWord.value.trim()
         })
 
         if (!checkAns) {
@@ -997,12 +981,12 @@ const addHandlerSubmitCheckAnswerForm = () => {
         if (g_timeTest === 0) {
             // Complete Game 
             showToast('Chúc mừng bạn đã hoàn thành xuất sắc trò chơi. Vui lòng vào Trang cá nhân để lấy phần thưởng!', 'info')
-            addNewHistoryPlay({ title: 'Trò chơi 1', difficulty: 'danger', timeTest: g_numberWordComplete })
-            setTimeout(() => {
-                location.assign('/')
-
-            }, 2000)
-            // renderInitPage()
+            const data = {
+                numberOfTest: g_numberWordComplete,
+                numberOfWord: g_listWord.length
+            }
+            await addHistory(data, g_gameId)
+            location.assign('/')
             return
         }
         timeTestDisplay.classList.remove('btn-outline-primary')
@@ -1017,7 +1001,7 @@ const addHandlerSubmitCheckAnswerForm = () => {
         document.querySelector('#inputWordGame1').focus()
     })
 }
-
+// OK
 const addHandlerSuggestFirstChar = () => {
     document.querySelector('.js-btn-suggest-first-char').addEventListener('click', (e) => {
         const btn = e.target
@@ -1028,14 +1012,14 @@ const addHandlerSuggestFirstChar = () => {
             return el.meaning === meaning
         })
         const firstCharSug = listSuggest.map((el) => {
-            return el.word.charAt(0)
+            return el.name.charAt(0)
         })
         const random = Math.floor(Math.random() * firstCharSug.length)
         document.querySelector('#inputWordGame1').value = firstCharSug[random]
         document.querySelector('#inputWordGame1').focus()
     })
 }
-
+// OK
 const addHandlerSuggestWord = () => {
     document.querySelector('.js-btn-suggest').addEventListener('click', (e) => {
         const btn = e.target
@@ -1051,7 +1035,7 @@ const addHandlerSuggestWord = () => {
         })
         btn.setAttribute('disabled', '')
         btn.innerHTML = listSuggest.map((el) => {
-            return `${el.word}`
+            return `${el.name}`
         }).join(' / ')
         g_timeSuggest--
         document.querySelector('.js-time-suggest-display span').innerText = g_timeSuggest
@@ -1300,7 +1284,7 @@ const addHandlerInputSearchWord = () => {
         renderSearchListWordTable()
     })
 }
-// Cần fix lại
+// OK
 const addHandlerRenderEditWordInput = () => {
     const listWord = document.querySelectorAll('.js-list-word-table tbody tr[id]')
     for (let word of listWord) {
@@ -1409,9 +1393,9 @@ const addHandlerRenderEditWordInput = () => {
                 const variWord = inputEditWord.value.trim()
                 const variMeaning = inputEditMeaning.value.trim()
                 if (inputEditWord.classList.contains('is-valid') && (inputEditMeaning.classList.contains('is-valid'))) {
+                    // Cập nhật thành công
                     await updateWordNow({ name: variWord, meaning: variMeaning }, id)
-                    showToast('Cập nhật thành công.', 'success')
-                    renderSearchListWordTable()
+                    await renderSearchListWordTable()
                     return
                 }
                 // thông báo Cập nhật thất bại
@@ -1442,7 +1426,7 @@ const addHandlerPaginatePage = () => {
         renderSearchListWordTable()
     })
 }
-// OK
+// Update
 const addHandlerRenderAllHistory = () => {
     const btn = document.querySelector('.js-btn-more-history')
     if (btn) {
