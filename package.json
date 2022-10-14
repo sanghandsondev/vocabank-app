@@ -21,5 +21,9 @@
     "axios": "^1.1.2",
     "core-js": "^3.25.4",
     "regenerator-runtime": "^0.13.9"
+  },
+  "browser": {
+    "crypto": false,
+    "process": false
   }
 }
