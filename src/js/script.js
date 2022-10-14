@@ -704,7 +704,7 @@ const listHistoryPlayMarkup = (list) => {
         <table class="table  js-list-history-table">
             <thead>
                 <tr>
-                    <th scope="col">Nguời chơi</th>
+                    <th scope="col">Trò chơi</th>
                     <th scope="col">Từ kiểm tra</th>
                     <th scope="col">Ngày hoàn thành</th>
                 </tr>
