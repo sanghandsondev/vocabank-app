@@ -6,7 +6,11 @@ import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
-import Markup from './markupView'
+import GameMarkup from './views/gameView'
+import AuthMarkup from './views/authView'
+import AccountMarkup from './views/accountView'
+import AdminMarkup from './views/adminView'
+import MainMarkup from './views/mainView'
 import { getAllWordByCurrentUser, getAllGames, addWord, removeWord, updateWord, addHistory, getHistoryOfCurrentUser } from './data'
 
 // const app = document.querySelector('.js-app')
@@ -16,7 +20,6 @@ const mainEl = document.querySelector('.js-main')
 const accountEl = document.querySelector('.js-account')
 const userEl = document.querySelector('.js-user')
 
-// Người dùng, từ của ng dùng, các trò chơi => database => admin page
 // LOCAL MODAL STATE
 let g_listWord = []
 let g_user
@@ -142,7 +145,7 @@ const renderInitPage = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
     await getListGame()
-    await renderView(mainEl, Markup.initpageMarkup(g_listGame))
+    await renderView(mainEl, GameMarkup.initpageMarkup(g_listGame))
     // add handler
     addHandlerClickOptionGame()
 }
@@ -150,28 +153,47 @@ const renderInitPage = async () => {
 const renderGame1 = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    await renderView(mainEl, Markup.game1Markup())
+    await renderView(mainEl, GameMarkup.gameMarkup())
     // add handler here for game 1 view
     addHandlerFocusTimeTestInput()
-    addHandlerSubmitTimeTestForm()
+    addHandlerSubmitTimeTestForm1()
 }
 // OK
 const renderGame1Content = async () => {
-    const contentEl = document.querySelector('.js-game1-content')
+    const contentEl = document.querySelector('.js-game-content')
     clear(contentEl)
     renderSpinner(contentEl)
-    await renderView(contentEl, Markup.game1ContentMarkup(g_listWord))
+    await renderView(contentEl, GameMarkup.game1ContentMarkup(g_listWord))
     //add handler
     addHandlerInputWordGame1()
     addHandlerSubmitCheckAnswerForm()
     addHandlerSuggestFirstChar()
     addHandlerSuggestWord()
 }
+
+const renderGame2 = async () => {
+    clear(mainEl)
+    renderSpinner(mainEl)
+    await renderView(mainEl, GameMarkup.gameMarkup())
+    // add handler
+    addHandlerFocusTimeTestInput()
+    addHandlerSubmitTimeTestForm2()
+}
+
+const renderGame2Content = async () => {
+    const contentEl = document.querySelector('.js-game-content')
+    clear(contentEl)
+    renderSpinner(contentEl)
+    await renderView(contentEl, GameMarkup.game2ContentMarkup(g_listWord))
+    // add handler
+}
+
+// --------------------------------------------------
 // OK
 const renderOptionLogin = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    await renderView(accountEl, Markup.optionLoginMarkup())
+    await renderView(accountEl, AuthMarkup.optionLoginMarkup())
     // add handler
     addHandlerRenderOptionLogin()
     addHandlerRenderSignup()
@@ -180,7 +202,7 @@ const renderOptionLogin = async () => {
 const renderLoginWithEmail = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    await renderView(accountEl, Markup.formLoginWithEmailMarkup())
+    await renderView(accountEl, AuthMarkup.formLoginWithEmailMarkup())
     // add handler
     addHandlerSubmitLogin()
 }
@@ -188,14 +210,14 @@ const renderLoginWithEmail = async () => {
 const renderSignup = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
-    await renderView(accountEl, Markup.formSignUpMarkup())
+    await renderView(accountEl, AuthMarkup.formSignUpMarkup())
     // add handler
     addHandlerSubmitSignup()
 }
 // OK
 const renderUserDisplay = async () => {
     clear(userEl)
-    await renderView(userEl, Markup.userDisplayMarkup(g_user))
+    await renderView(userEl, AuthMarkup.userDisplayMarkup(g_user))
     // add handler
     addHandlerLogOut()
     addHandlerRenderListHistoryPlay()
@@ -205,7 +227,7 @@ const renderUserDisplay = async () => {
 // OK
 const renderLoginClick = async () => {
     clear(userEl)
-    await renderView(userEl, Markup.loginClickMarkup())
+    await renderView(userEl, AuthMarkup.loginClickMarkup())
     //add handler
     addHandlerClickLogIn()
 }
@@ -215,7 +237,7 @@ const renderListWordTable = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
     await getListWord()   // LOAD data lần đầu vs API
-    await renderView(accountEl, Markup.listWordTableMarkup(g_listWord))
+    await renderView(accountEl, AccountMarkup.listWordTableMarkup(g_listWord))
     // add handler
     addHandlerRenderAddWordInput()
     addHandlerInputSearchWord()
@@ -223,13 +245,12 @@ const renderListWordTable = async () => {
     addHandlerRenderEditWordInput()
 }
 // OK
-// LƯU Ý: render bảng word phụ thuộc vào data-index của paginationEl
 const renderSearchListWordTable = async () => {
     const listword = document.querySelector('.js-list-word-table')
     const inputSearch = document.querySelector('#inputSearchWord')
     clear(listword)
     renderSpinner(listword)
-    await renderView(listword, Markup.updateListWordMarkup(resultSearchListWord(inputSearch.value)))
+    await renderView(listword, AccountMarkup.updateListWordMarkup(resultSearchListWord(inputSearch.value)))
     renderUpdatePagination()
     // add handler
     addHandlerRenderEditWordInput()
@@ -240,7 +261,7 @@ const renderUpdatePagination = () => {
     const inputSearch = document.querySelector('#inputSearchWord')
     clear(paginationEl)
     renderSpinner(paginationEl)
-    renderView(paginationEl, Markup.updatePaginationMarkup(resultSearchListWord(inputSearch.value)))
+    renderView(paginationEl, AccountMarkup.updatePaginationMarkup(resultSearchListWord(inputSearch.value)))
     // add handler
 }
 // OK
@@ -248,15 +269,16 @@ const renderListHistoryPlay = async () => {
     clear(accountEl)
     renderSpinner(accountEl)
     await getListHistoryOfCurrentUser()
-    await renderView(accountEl, Markup.listHistoryPlayMarkup(g_listHistoryPlay))
+    await renderView(accountEl, AccountMarkup.listHistoryPlayMarkup(g_listHistoryPlay))
     // add handler
     addHandlerRenderAllHistory()
 }
-// Update
+//--------------------------------------
+// CẦN UPDATE
 const renderAllHistory = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    await renderView(mainEl, Markup.allHistoryPlayMarkup(g_listHistoryPlay))
+    await renderView(mainEl, MainMarkup.allHistoryPlayMarkup(g_listHistoryPlay))
     // add handler
 }
 
@@ -266,13 +288,13 @@ const renderInitAdminPage = () => {
     // clear(headerEl)
     clear(contentEl)
     clear(userEl)
-    renderView(contentEl, Markup.adminPageInitMarkup())
+    renderView(contentEl, AdminMarkup.adminPageInitMarkup())
     // Add handler
 }
 
 // ------------------------- ADD HANDLER -------------------------------
 // Init Page Load
-// Update
+// OK
 const addHandlerClickOptionGame = async () => {
     const btnGame1 = document.querySelector('.js-game-1')
     const btnGame2 = document.querySelector('.js-game-2')
@@ -287,32 +309,30 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         g_gameId = btnGame1.getAttribute('id')
-        console.log(g_gameId)
         clear(userEl)
         clear(accountEl)
         renderGame1()
     })
 
-    // btnGame2.addEventListener('click', async () => {
-    //     if (!g_user) {
-    //         showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
-    //         return
-    //     }
-    //     await getListWord()
-
-    //     if (g_listWord.length < 10) {
-    //         showToast('Bảng từ vựng cần tối thiểu 10 từ để tham gia trò chơi.', 'warning')
-    //         return
-    //     }
-
-    //     showToast('Trò chơi đang trong giai đoạn phát triển. Vui lòng thử lại sau.', 'info')
-    //     // gameId = btnGame2.getAttribute('id')
-    //     // renderGame2()
-    // })
+    btnGame2.addEventListener('click', async () => {
+        if (!g_user) {
+            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+            return
+        }
+        await getListWord()
+        if (g_listWord.length < 20) {
+            showToast('Bảng từ vựng cần tối thiểu 20 từ để tham gia trò chơi.', 'warning')
+            return
+        }
+        g_gameId = btnGame2.getAttribute('id')
+        clear(userEl)
+        clear(accountEl)
+        renderGame2()
+    })
 }
 
-// Game 1
-// OK
+//============= GAME ===========
+
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
         document.querySelector('#inputTimeTest').focus()
@@ -321,8 +341,8 @@ const addHandlerFocusTimeTestInput = () => {
         document.querySelector('#inputTimeTest').focus()
     })
 }
-// OK
-const addHandlerSubmitTimeTestForm = () => {
+
+const addHandlerSubmitTimeTestForm1 = () => {
     document.querySelector('.js-form-time-test').addEventListener('submit', (e) => {
         e.preventDefault()
         const timeTest = document.querySelector('#inputTimeTest').value
@@ -335,15 +355,15 @@ const addHandlerSubmitTimeTestForm = () => {
             document.querySelector('#timeTestHelp').textContent = `Bạn cần nhập một số nguyên dương.`
             return false
         }
-        if (timeTest > 360) {
-            document.querySelector('#timeTestHelp').textContent = `Tối đa 360 lượt.`
+        if (timeTest > 1000) {
+            document.querySelector('#timeTestHelp').textContent = `Tối đa 1000 lượt.`
             return false
         }
         g_numberWordComplete = timeTest
         g_timeTest = timeTest
         g_timeSuggest = Number.parseInt(timeTest / 7)
         g_timeLive = Number.parseInt(timeTest / 4) + 1
-        g_timeOut = (timeTest * 20 * 1000)
+        g_timeOut = (timeTest * 10 * 1000)
         const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
         setTimeDisplay(g_timeOut)
         const myTimer = setInterval(() => {
@@ -370,7 +390,7 @@ const addHandlerSubmitTimeTestForm = () => {
         }, 1000)
 
         $('#timeTestModal').modal('hide')
-        document.querySelector('.js-time-game1').classList.remove('hidden')
+        document.querySelector('.js-time-game').classList.remove('hidden')
         document.querySelector('.js-btn-start-game').classList.add('hidden')
         document.querySelector('.js-time-test-display span').textContent = g_timeTest
         document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
@@ -379,6 +399,66 @@ const addHandlerSubmitTimeTestForm = () => {
         document.querySelector('#inputWordGame1').focus()
     })
 }
+
+const addHandlerSubmitTimeTestForm2 = () => {
+    document.querySelector('.js-form-time-test').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const timeTest = document.querySelector('#inputTimeTest').value
+        // console.log(timeTest)
+        if (!Number.isInteger(Number(timeTest))) {
+            document.querySelector('#timeTestHelp').textContent = `Bạn cần nhập một số nguyên.`
+            return false
+        }
+        if (timeTest <= 0) {
+            document.querySelector('#timeTestHelp').textContent = `Bạn cần nhập một số nguyên dương.`
+            return false
+        }
+        if (timeTest > 1000) {
+            document.querySelector('#timeTestHelp').textContent = `Tối đa 1000 lượt.`
+            return false
+        }
+        g_numberWordComplete = timeTest
+        g_timeTest = timeTest
+        g_timeSuggest = 0
+        g_timeLive = Number.parseInt(timeTest / 4) + 1
+        g_timeOut = (timeTest * 10 * 1000)
+        const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
+        setTimeDisplay(g_timeOut)
+        const myTimer = setInterval(() => {
+            setTimeDisplay(g_timeOut)
+
+            if (g_timeOut === 180000) {
+                btnTimeOutDisplay.classList.remove('btn-info')
+                btnTimeOutDisplay.classList.add('btn-warning')
+            }
+            if (g_timeOut === 60000) {
+                btnTimeOutDisplay.classList.remove('btn-info')
+                btnTimeOutDisplay.classList.remove('btn-warning')
+                btnTimeOutDisplay.classList.add('btn-danger')
+            }
+            if (g_timeOut === 0) {
+                // resetLocalGameState()
+                clearInterval(myTimer)
+                showToast('Hết thời gian. Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
+                setTimeout(() => {
+                    location.assign('/')
+                }, 4000)
+            }
+            g_timeOut -= 1000
+        }, 1000)
+
+        $('#timeTestModal').modal('hide')
+        document.querySelector('.js-time-game').classList.remove('hidden')
+        document.querySelector('.js-btn-start-game').classList.add('hidden')
+        document.querySelector('.js-time-test-display span').textContent = g_timeTest
+        document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
+        document.querySelector('.js-time-live-display span').textContent = g_timeLive
+        renderGame2Content()
+        // document.querySelector('#inputWordGame1').focus()
+    })
+}
+
+// Game 1
 // OK
 const addHandlerInputWordGame1 = () => {
     document.querySelector('#inputWordGame1').addEventListener('input', (e) => {
@@ -492,6 +572,9 @@ const addHandlerSuggestWord = () => {
         document.querySelector('.js-time-suggest-display').classList.add('btn-warning')
     })
 }
+
+
+
 // Auth + User
 // Update
 const addHandlerRenderOptionLogin = () => {
@@ -560,6 +643,7 @@ const addHandlerLogOut = () => {
             showToast('Bạn đã đăng xuất', 'info')
             g_listWord = []
             g_listStoryPlay = []
+            console.log(document.cookie)
             renderLoginClick()
             renderOptionLogin()
             renderInitPage()
@@ -700,6 +784,7 @@ const addHandlerAddWord = () => {
         const name = e.target.value.trim()
         if (!name) {
             document.querySelector('#inputAddWordHelp').textContent = 'Không được bỏ trống.'
+            e.target.classList.remove('is-valid')
             return
         }
         document.querySelector('#inputAddWordHelp').textContent = ''
@@ -714,6 +799,7 @@ const addHandlerAddWord = () => {
         const meaning = e.target.value.trim()
         if (!meaning) {
             document.querySelector('#inputAddMeaningHelp').textContent = 'Không được bỏ trống.'
+            e.target.classList.remove('is-valid')
             return
         }
         document.querySelector('#inputAddMeaningHelp').textContent = ''

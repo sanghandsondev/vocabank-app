@@ -51,6 +51,7 @@ export const logout = async () => {
             }
         })
         if (res.data.status === "success") {
+            document.cookie = `jwt=loggouted`;
             localStorage.removeItem('user')
         }
     } catch (err) {
