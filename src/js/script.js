@@ -1,7 +1,7 @@
 // import 'core-js/stable'                     // polyfilling everything else
 // import '@babel/polyfill'
 // import 'regenerator-runtime/runtime'        // polyfilling async/await
-import { RESULT_PER_PAGE } from './config'
+import { RESULT_PER_PAGE, SECOND_PER_TEST } from './config'
 import { isEmail, isWordUnique, existMaxChar } from './utils'
 import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
@@ -366,7 +366,7 @@ const addHandlerSubmitTimeTestForm1 = () => {
         g_timeTest = timeTest
         g_timeSuggest = Number.parseInt(timeTest / 7)
         g_timeLive = Number.parseInt(timeTest / 4) + 1
-        g_timeOut = (timeTest * 10 * 1000)
+        g_timeOut = (timeTest * SECOND_PER_TEST * 1000)
         const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
         setTimeDisplay(g_timeOut)
         const myTimer = setInterval(() => {
@@ -424,7 +424,7 @@ const addHandlerSubmitTimeTestForm2 = () => {
         g_timeTest = timeTest
         g_timeSuggest = 0
         g_timeLive = Number.parseInt(timeTest / 4) + 1
-        g_timeOut = (timeTest * 10 * 1000)
+        g_timeOut = (timeTest * SECOND_PER_TEST * 1000)
         const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
         setTimeDisplay(g_timeOut)
         const myTimer = setInterval(() => {
@@ -462,7 +462,6 @@ const addHandlerSubmitTimeTestForm2 = () => {
 }
 
 // Game 1 -------------
-// OK
 const addHandlerInputWordGame1 = () => {
     document.querySelector('#inputWordGame1').addEventListener('input', (e) => {
         e.target.classList.remove('is-invalid')
@@ -512,7 +511,8 @@ const addHandlerSubmitCheckAnswerForm1 = () => {
             showToast('Chúc mừng bạn đã hoàn thành xuất sắc trò chơi. Vui lòng vào Trang cá nhân để lấy phần thưởng!', 'info')
             const data = {
                 numberOfTest: g_numberWordComplete,
-                numberOfWord: g_listWord.length
+                numberOfWord: g_listWord.length,
+                dateCompleted: new Date().toLocaleString("en-US")
             }
             await addHistory(data, g_gameId)
             location.assign('/')
@@ -609,7 +609,6 @@ const addHandlerSelectByKeyBoardGame2 = () => {
     })
 }
 
-
 const addHandlerSubmitCheckAnswerForm2 = () => {
     document.querySelector('.js-form-check-answer-game2').addEventListener('submit', async (e) => {
         e.preventDefault()
@@ -620,7 +619,6 @@ const addHandlerSubmitCheckAnswerForm2 = () => {
                 inputAnswer = input.value
             }
         }
-        console.log(inputAnswer)
         const timeTestDisplay = document.querySelector('.js-time-test-display')
         const timeLiveDisplay = document.querySelector('.js-time-live-display')
         const index = document.querySelector('.js-btn-check-answer').getAttribute('id')
@@ -649,7 +647,8 @@ const addHandlerSubmitCheckAnswerForm2 = () => {
             showToast('Chúc mừng bạn đã hoàn thành xuất sắc trò chơi. Vui lòng vào Trang cá nhân để lấy phần thưởng!', 'info')
             const data = {
                 numberOfTest: g_numberWordComplete,
-                numberOfWord: g_listWord.length
+                numberOfWord: g_listWord.length,
+                dateCompleted: new Date().toLocaleString("en-US")
             }
             await addHistory(data, g_gameId)
             location.assign('/')
@@ -664,8 +663,6 @@ const addHandlerSubmitCheckAnswerForm2 = () => {
         return
     })
 }
-
-
 
 // Auth + User
 // Update
