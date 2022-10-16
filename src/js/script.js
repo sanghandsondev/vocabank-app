@@ -166,7 +166,7 @@ const renderGame1Content = async () => {
     await renderView(contentEl, GameMarkup.game1ContentMarkup(g_listWord))
     //add handler
     addHandlerInputWordGame1()
-    addHandlerSubmitCheckAnswerForm()
+    addHandlerSubmitCheckAnswerForm1()
     addHandlerSuggestFirstChar()
     addHandlerSuggestWord()
 }
@@ -186,6 +186,9 @@ const renderGame2Content = async () => {
     renderSpinner(contentEl)
     await renderView(contentEl, GameMarkup.game2ContentMarkup(g_listWord))
     // add handler
+    addHandlerSelectAnswerGame2()
+    addHandlerSubmitCheckAnswerForm2()
+    addHandlerSelectByKeyBoardGame2()
 }
 
 // --------------------------------------------------
@@ -458,7 +461,7 @@ const addHandlerSubmitTimeTestForm2 = () => {
     })
 }
 
-// Game 1
+// Game 1 -------------
 // OK
 const addHandlerInputWordGame1 = () => {
     document.querySelector('#inputWordGame1').addEventListener('input', (e) => {
@@ -466,7 +469,7 @@ const addHandlerInputWordGame1 = () => {
     })
 }
 // OK
-const addHandlerSubmitCheckAnswerForm = () => {
+const addHandlerSubmitCheckAnswerForm1 = () => {
     document.querySelector('.js-form-check-answer-game1').addEventListener('submit', async (e) => {
         e.preventDefault()
         const index = document.querySelector('.js-btn-check-answer').getAttribute('id')
@@ -493,13 +496,10 @@ const addHandlerSubmitCheckAnswerForm = () => {
             timeLiveDisplay.classList.remove('btn-outline-primary')
             timeLiveDisplay.classList.add('btn-danger')
             if (g_timeLive === 0 || g_timeLive < 0) {
-                // Show Modal 
-                // resetLocalGameState()
                 showToast('Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
                 setTimeout(() => {
                     location.assign('/')
                 }, 2000)
-                // renderInitPage()
                 return
             }
             inputWord.focus()
@@ -570,6 +570,98 @@ const addHandlerSuggestWord = () => {
         document.querySelector('.js-time-suggest-display span').innerText = g_timeSuggest
         document.querySelector('.js-time-suggest-display').classList.remove('btn-outline-primary')
         document.querySelector('.js-time-suggest-display').classList.add('btn-warning')
+    })
+}
+// Game 2 ------------
+// OK
+const addHandlerSelectAnswerGame2 = () => {
+    const btns = document.querySelectorAll('.form-check button')
+    for (let btn of btns) {
+        btn.addEventListener('click', (e) => {
+            btn.parentElement.querySelector('input').click()
+            for (let btnn of btns) {
+                btnn.classList.remove('btn-primary')
+                btnn.classList.add('btn-outline-primary')
+            }
+            btn.classList.remove('btn-outline-primary')
+            btn.classList.add('btn-primary')
+            // console.log(btn.parentElement.querySelector('input').value)
+        })
+
+    }
+}
+const addHandlerSelectByKeyBoardGame2 = () => {
+    document.addEventListener('keypress', (e) => {
+        switch (e.key) {
+            case "1":
+                document.querySelector('.js-answer-1').click()
+                break;
+            case "2":
+                document.querySelector('.js-answer-2').click()
+                break;
+            case "3":
+                document.querySelector('.js-answer-3').click()
+                break;
+            case "4":
+                document.querySelector('.js-answer-4').click()
+                break;
+        }
+    })
+}
+
+
+const addHandlerSubmitCheckAnswerForm2 = () => {
+    document.querySelector('.js-form-check-answer-game2').addEventListener('submit', async (e) => {
+        e.preventDefault()
+        let inputAnswer
+        let inputs = document.getElementsByName('answer')
+        for (let input of inputs) {
+            if (input.checked) {
+                inputAnswer = input.value
+            }
+        }
+        console.log(inputAnswer)
+        const timeTestDisplay = document.querySelector('.js-time-test-display')
+        const timeLiveDisplay = document.querySelector('.js-time-live-display')
+        const index = document.querySelector('.js-btn-check-answer').getAttribute('id')
+        const checkAns = inputAnswer === g_listWord[index].name
+        if (!checkAns) {
+            // Wrong answer
+            g_timeLive--
+            document.querySelector('.js-time-live-display span').innerText = g_timeLive
+            timeTestDisplay.classList.remove('btn-success')
+            timeTestDisplay.classList.add('btn-outline-primary')
+            timeLiveDisplay.classList.remove('btn-outline-primary')
+            timeLiveDisplay.classList.add('btn-danger')
+            if (g_timeLive === 0 || g_timeLive < 0) {
+                showToast('Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
+                setTimeout(() => {
+                    location.assign('/')
+                }, 2000)
+                return
+            }
+            return
+        }
+        // Right answer
+        g_timeTest--
+        if (g_timeTest === 0) {
+            // Complete Game 
+            showToast('Chúc mừng bạn đã hoàn thành xuất sắc trò chơi. Vui lòng vào Trang cá nhân để lấy phần thưởng!', 'info')
+            const data = {
+                numberOfTest: g_numberWordComplete,
+                numberOfWord: g_listWord.length
+            }
+            await addHistory(data, g_gameId)
+            location.assign('/')
+            return
+        }
+        timeTestDisplay.classList.remove('btn-outline-primary')
+        timeTestDisplay.classList.add('btn-success')
+        timeLiveDisplay.classList.remove('btn-danger')
+        timeLiveDisplay.classList.add('btn-outline-primary')
+        document.querySelector('.js-time-test-display span').innerText = g_timeTest
+        renderGame2Content()
+        return
     })
 }
 

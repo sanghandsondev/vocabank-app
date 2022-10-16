@@ -100,32 +100,50 @@ class GameMarkup {
     }
 
     game2ContentMarkup(list) {
-        // let fakeList = []
-        // const length = list.length
-        // const random = Math.floor(Math.random() * length)
-        // const question = list[random].name
-
-        // console.log(fakeList)
-        // console.log(list)
-
+        let fakeList = []
+        const length = list.length
+        const random = Math.floor(Math.random() * length)
+        const question = list[random].meaning
+        const answer = list[random].name
+        const newList = list.filter((el) => {
+            return el.meaning !== question
+        })
+        // Choose 3 fake answer
+        let random3 = Math.floor(Math.random() * 4) // các vị trí bất kì trong fakeList
+        let random2
+        let fakeAnswer
+        for (let i = 0; i < 4; i++) {
+            if (i === random3) {
+                fakeList.push(answer)
+                continue
+            }
+            random2 = Math.floor(Math.random() * newList.length)
+            fakeAnswer = newList[random2].name
+            fakeList.push(fakeAnswer)
+            newList.splice(random2, 1)
+        }
+        // render
+        const markup = fakeList.map((el, index) => {
+            return `
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="radio" name="answer" hidden value="${el}">
+                    <button type="button" class="btn btn-outline-primary js-answer-${index + 1}" style="width:60%">
+                            ${el}
+                    </button>
+                </div>
+         `
+        }).join('')
 
         return `
-            <button type="button" class="btn btn-info mt-2" disabled
-                id="${random}">
-                Câu hỏi: ${list[random].meaning}
+            <button type="button" class="btn btn-info mt-2" disabled>
+                Câu hỏi: ${question}
             </button>
 
-            <div class="js-form-check-answer-game2 mt-2 ">
-                <button type="button" class="btn btn-outline-primary mt-2" style="width:60%;">father</button>
-                <br>
-                <button type="button" class="btn btn-outline-primary mt-2" style="width:60%;">mother</button>
-                <br>
-                <button type="button" class="btn btn-outline-primary mt-2" style="width:60%;">sister</button>
-                <br>
-                <button type="button" class="btn btn-outline-primary mt-2" style="width:60%;">brother</button>
-                <br>
-            </div>
-            <button type="button" class="btn btn-primary mt-2 js-btn-check-answer" >Kiểm tra đáp án</button>
+            <form class="js-form-check-answer-game2 mt-2 ">
+                ${markup}
+                     
+                <button id="${random}" type="submit" class="btn btn-primary mt-3 ml-3 js-btn-check-answer" >Kiểm tra đáp án</button>
+            </form>
         `
     }
 }
