@@ -206,17 +206,16 @@ class AccountMarkup {
             derseList.push(list[i])
         }
         const markupList = derseList.map((el) => {
-            const date = el.dateCompleted.split('.')[0]
             return `
             <tr>
                 <td class="text-${el.game.difficulty}">${el.game.title}</td>
                 <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
-                <td>${date}</td>
+                <td>${el.dateCompleted}</td>
             </tr>
         `
         }).join('')
         return `
-        <table class="table  js-list-history-table">
+        <table class="table table__list-history js-list-history-table">
             <thead>
                 <tr>
                     <th scope="col">Trò chơi</th>
@@ -229,6 +228,7 @@ class AccountMarkup {
             </tbody>
         </table>
         ${markupMore}
+        
     `
     }
 

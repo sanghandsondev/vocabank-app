@@ -62,6 +62,17 @@
     cursor: pointer;
 }
 
+/* ACCOUNT */
+.table__list-history {
+    font-size: 0.9rem;
+}
+
+
+.account {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
 /* BREADCRUMB */
 
 

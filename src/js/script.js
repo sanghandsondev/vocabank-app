@@ -160,10 +160,10 @@ const renderGame1 = async () => {
 }
 // OK
 const renderGame1Content = async () => {
-    const contentEl = document.querySelector('.js-game-content')
-    clear(contentEl)
-    renderSpinner(contentEl)
-    await renderView(contentEl, GameMarkup.game1ContentMarkup(g_listWord))
+    const contentElem = document.querySelector('.js-game-content')
+    clear(contentElem)
+    renderSpinner(contentElem)
+    await renderView(contentElem, GameMarkup.game1ContentMarkup(g_listWord))
     //add handler
     addHandlerInputWordGame1()
     addHandlerSubmitCheckAnswerForm1()
@@ -181,10 +181,10 @@ const renderGame2 = async () => {
 }
 
 const renderGame2Content = async () => {
-    const contentEl = document.querySelector('.js-game-content')
-    clear(contentEl)
-    renderSpinner(contentEl)
-    await renderView(contentEl, GameMarkup.game2ContentMarkup(g_listWord))
+    const contentElem = document.querySelector('.js-game-content')
+    clear(contentElem)
+    renderSpinner(contentElem)
+    await renderView(contentElem, GameMarkup.game2ContentMarkup(g_listWord))
     // add handler
     addHandlerSelectAnswerGame2()
     addHandlerSubmitCheckAnswerForm2()
