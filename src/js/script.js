@@ -727,7 +727,7 @@ const addHandlerLogOut = () => {
             await getUserFromLocalStorage()
             showToast('Bạn đã đăng xuất', 'info')
             g_listWord = []
-            g_listStoryPlay = []
+            g_listHistoryPlay = []
             console.log(document.cookie)
             renderLoginClick()
             renderOptionLogin()

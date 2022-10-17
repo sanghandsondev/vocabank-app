@@ -67,10 +67,6 @@
     overflow-y: auto;
 }
 
-.table__list-history {
-    font-size: 0.9rem;
-}
-
 /* SCROLLBAR  */
 ::-webkit-scrollbar {
     width: 5px;
