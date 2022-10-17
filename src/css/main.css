@@ -62,16 +62,27 @@
     cursor: pointer;
 }
 
-/* ACCOUNT */
+.main {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
 .table__list-history {
     font-size: 0.9rem;
 }
 
-
-.account {
-    max-height: 85vh;
-    overflow-y: auto;
+/* SCROLLBAR  */
+::-webkit-scrollbar {
+    width: 5px;
 }
+
+::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 2px;
+}
+
+
+
 
 /* BREADCRUMB */
 

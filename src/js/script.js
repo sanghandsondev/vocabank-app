@@ -66,7 +66,10 @@ const getListHistoryOfCurrentUser = async () => {
     try {
         const data = await getHistoryOfCurrentUser()
         if (!data) return
-        g_listHistoryPlay = data
+        const length = data.length
+        for (let i = length - 1; i >= 0; i--) {
+            g_listHistoryPlay.push(data[i])
+        }
     }
     catch (err) {
         showToast(err, 'danger')
@@ -140,7 +143,7 @@ const renderView = (parentElement, markup) => {
 }
 
 // ----------------------- RENDER VIEW-----------------------------
-// OK
+// MAIN ------------
 const renderInitPage = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
@@ -158,7 +161,7 @@ const renderGame1 = async () => {
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm1()
 }
-// OK
+
 const renderGame1Content = async () => {
     const contentElem = document.querySelector('.js-game-content')
     clear(contentElem)
@@ -191,7 +194,7 @@ const renderGame2Content = async () => {
     addHandlerSelectByKeyBoardGame2()
 }
 
-// --------------------------------------------------
+// ACCOUNT --------------
 // OK
 const renderOptionLogin = async () => {
     clear(accountEl)
@@ -223,6 +226,7 @@ const renderUserDisplay = async () => {
     await renderView(userEl, AuthMarkup.userDisplayMarkup(g_user))
     // add handler
     addHandlerLogOut()
+    addHandlerRenderListGame()
     addHandlerRenderListHistoryPlay()
     addHandlerRenderListWordTable()
     addHandlerRenderAdminPage()
@@ -269,19 +273,10 @@ const renderUpdatePagination = () => {
 }
 // OK
 const renderListHistoryPlay = async () => {
-    clear(accountEl)
-    renderSpinner(accountEl)
-    await getListHistoryOfCurrentUser()
-    await renderView(accountEl, AccountMarkup.listHistoryPlayMarkup(g_listHistoryPlay))
-    // add handler
-    addHandlerRenderAllHistory()
-}
-//--------------------------------------
-// CẦN UPDATE
-const renderAllHistory = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
-    await renderView(mainEl, MainMarkup.allHistoryPlayMarkup(g_listHistoryPlay))
+    await getListHistoryOfCurrentUser()
+    await renderView(mainEl, MainMarkup.listHistoryPlayMarkup(g_listHistoryPlay))
     // add handler
 }
 
@@ -335,7 +330,7 @@ const addHandlerClickOptionGame = async () => {
 }
 
 //============= GAME ===========
-
+// OK
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
         document.querySelector('#inputTimeTest').focus()
@@ -344,7 +339,7 @@ const addHandlerFocusTimeTestInput = () => {
         document.querySelector('#inputTimeTest').focus()
     })
 }
-
+// OK
 const addHandlerSubmitTimeTestForm1 = () => {
     document.querySelector('.js-form-time-test').addEventListener('submit', (e) => {
         e.preventDefault()
@@ -402,7 +397,7 @@ const addHandlerSubmitTimeTestForm1 = () => {
         document.querySelector('#inputWordGame1').focus()
     })
 }
-
+// OK
 const addHandlerSubmitTimeTestForm2 = () => {
     document.querySelector('.js-form-time-test').addEventListener('submit', (e) => {
         e.preventDefault()
@@ -590,6 +585,7 @@ const addHandlerSelectAnswerGame2 = () => {
 
     }
 }
+//
 const addHandlerSelectByKeyBoardGame2 = () => {
     document.addEventListener('keypress', (e) => {
         switch (e.key) {
@@ -743,6 +739,12 @@ const addHandlerLogOut = () => {
                 location.assign('/')               // chuyển pages sau 2s
             }, 2000)
         }
+    })
+}
+// OK
+const addHandlerRenderListGame = () => {
+    document.querySelector('.js-list-game').addEventListener('click', (e) => {
+        renderInitPage()
     })
 }
 // OK
@@ -1049,17 +1051,6 @@ const addHandlerPaginatePage = () => {
         renderUpdatePagination()
         renderSearchListWordTable()
     })
-}
-// Update
-const addHandlerRenderAllHistory = () => {
-    const btn = document.querySelector('.js-btn-more-history')
-    if (btn) {
-        btn.addEventListener('click', () => {
-            renderAllHistory()
-            clear(accountEl)
-        })
-    }
-
 }
 
 // All history play table

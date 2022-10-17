@@ -196,41 +196,7 @@ class AccountMarkup {
         // Page 1, and there are NO other pages
         return ''
     }
-    // OK
-    listHistoryPlayMarkup(list) {
-        const length = list.length
-        let derseList = []
-        let markupMore = length > RESULT_PER_PAGE ? `<button class="btn btn-outline-info btn-sm js-btn-more-history">Xem tất cả ...</button>` : ''
-        for (let i = length - 1; i >= length - RESULT_PER_PAGE; i--) {
-            if (i < 0) break
-            derseList.push(list[i])
-        }
-        const markupList = derseList.map((el) => {
-            return `
-            <tr>
-                <td class="text-${el.game.difficulty}">${el.game.title}</td>
-                <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
-                <td>${el.dateCompleted}</td>
-            </tr>
-        `
-        }).join('')
-        return `
-        <table class="table table__list-history js-list-history-table">
-            <thead>
-                <tr>
-                    <th scope="col">Trò chơi</th>
-                    <th scope="col">Từ kiểm tra</th>
-                    <th scope="col">Ngày hoàn thành</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${markupList}
-            </tbody>
-        </table>
-        ${markupMore}
-        
-    `
-    }
+
 
 }
 

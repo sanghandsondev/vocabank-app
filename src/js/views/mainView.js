@@ -1,39 +1,37 @@
 
 class MainMarkup {
-
-    // CẦN FIX THÊM
-    allHistoryPlayMarkup(list) {
-        const length = list.length
-        const derseList = list.map((el, index) => {
-            return list[length - 1 - index]
-        })
-        const markupList = derseList.map((el, index) => {
+    // OK
+    listHistoryPlayMarkup(list) {
+        // const length = list.length
+        // let derseList = []
+        // for (let i = length - 1; i >= length - 100; i--) {
+        //     if (i < 0) break
+        //     derseList.push(list[i])
+        // }
+        const markupList = list.map((el) => {
             return `
-        <tr>
-            <td class="text-${el.game.difficulty} text-center">${el.game.title}</td>
-            <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
-            <td class="text-center">${el.dateCompleted.split('.')[0]}</td>
-        </tr>
+            <tr>
+                <td class="text-${el.game.difficulty} text-center">${el.game.title}</td>
+                <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
+                <td class="text-center">${el.dateCompleted}</td>
+            </tr>
         `
         }).join('')
         return `
-        <table class="table table-sm js-all-history-table">
+        <table class="table table__list-history js-list-history-table">
             <thead>
                 <tr>
-                    <th class="text-center" scope="col">Trò chơi</th>
-                    <th  class="text-center" scope="col">Từ kiểm tra</th>
-                    <th class="text-center" scope="col">Ngày hoàn thành</th>
+                    <th scope="col" class="text-center">Trò chơi</th>
+                    <th scope="col" class="text-center">Từ kiểm tra</th>
+                    <th scope="col" class="text-center">Ngày hoàn thành</th>
                 </tr>
             </thead>
             <tbody>
                 ${markupList}
             </tbody>
-        </table>
+        </table> 
     `
-
     }
-
-
 }
 
 export default new MainMarkup()
