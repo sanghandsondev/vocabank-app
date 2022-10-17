@@ -67,9 +67,11 @@ const getListHistoryOfCurrentUser = async () => {
         const data = await getHistoryOfCurrentUser()
         if (!data) return
         const length = data.length
+        let list = []
         for (let i = length - 1; i >= 0; i--) {
-            g_listHistoryPlay.push(data[i])
+            list.push(data[i])
         }
+        g_listHistoryPlay = list
     }
     catch (err) {
         showToast(err, 'danger')
