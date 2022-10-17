@@ -713,7 +713,7 @@ const addHandlerSubmitLogin = () => {
             await getUserFromLocalStorage()
             showToast('Đăng nhập thành công.', 'success')
             renderUserDisplay()
-            renderListHistoryPlay()
+            clear(accountEl)
         } catch (err) {
             showToast(err, 'danger')
         }
