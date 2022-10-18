@@ -19,7 +19,7 @@ class MainMarkup {
         }).join('')
         return `
         <table class="table table__list-history js-list-history-table">
-            <thead>
+            <thead">
                 <tr>
                     <th scope="col" class="text-center">Trò chơi</th>
                     <th scope="col" class="text-center">Từ kiểm tra</th>

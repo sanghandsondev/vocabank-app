@@ -17,3 +17,13 @@ export const existMaxChar = (value, max) => {
     if (length > max) return false
     return true
 }
+
+export const existMinChar = (value, min) => {
+    const length = value.length
+    if (length < min) return false
+    return true
+}
+
+export const isEqual = (value1, value2) => {
+    return value1 === value2
+}

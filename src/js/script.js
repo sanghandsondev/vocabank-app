@@ -2,7 +2,7 @@
 // import '@babel/polyfill'
 // import 'regenerator-runtime/runtime'        // polyfilling async/await
 import { RESULT_PER_PAGE, SECOND_PER_TEST } from './config'
-import { isEmail, isWordUnique, existMaxChar } from './utils'
+import { isEmail, isWordUnique, existMaxChar, isEqual, existMinChar } from './utils'
 import { login, logout, signup } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
@@ -220,6 +220,7 @@ const renderSignup = async () => {
     renderSpinner(accountEl)
     await renderView(accountEl, AuthMarkup.formSignUpMarkup())
     // add handler
+    addHandlerValidateFormSignup()
     addHandlerSubmitSignup()
 }
 // OK
@@ -331,7 +332,7 @@ const addHandlerClickOptionGame = async () => {
     })
 }
 
-//============= GAME ===========
+//============= GAME =================
 // OK
 const addHandlerFocusTimeTestInput = () => {
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
@@ -662,7 +663,7 @@ const addHandlerSubmitCheckAnswerForm2 = () => {
     })
 }
 
-// Auth + User
+// ================ AUTH ===============
 // Update
 const addHandlerRenderOptionLogin = () => {
     const btnLoginwithEmail = document.querySelector('.js-btn-login-email')
@@ -684,14 +685,71 @@ const addHandlerClickLogIn = () => {
         renderOptionLogin()
     })
 }
+const addHandlerValidateFormSignup = () => {
+    const inputEmail = document.querySelector('#inputSignupEmail')
+    const inputName = document.querySelector('#inputSignupName')
+    const inputPassword = document.querySelector('#inputSignupPassWord')
+    const inputPasswordConf = document.querySelector('#inputSignupPassWordConfirm')
+    inputEmail.addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+    })
+    inputName.addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+    })
+
+    inputPassword.addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+    })
+    inputEmail.addEventListener('blur', (e) => {
+        if (!isEmail(e.target.value.trim())) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+    inputName.addEventListener('blur', (e) => {
+        if (!existMinChar(e.target.value.trim(), 4) || !existMaxChar(e.target.value.trim(), 30)) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+    inputPassword.addEventListener('blur', (e) => {
+        if (!existMinChar(e.target.value, 6)) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+    inputPasswordConf.addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+        if (!isEqual(inputPassword.value, e.target.value)) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+}
 // OK
 const addHandlerSubmitSignup = () => {
     document.querySelector('.js-form-signup').addEventListener('submit', async (e) => {
         e.preventDefault()
-        const passwordConfirm = document.querySelector('#inputSignupPassWordConfirm').value.trim()
-        const password = document.querySelector('#inputSignupPassWord').value.trim()
-        const email = document.querySelector('#inputSignupEmail').value.trim()
-        const name = document.querySelector('#inputSignupName').value.trim()
+        const passwordConfirmInput = document.querySelector('#inputSignupPassWordConfirm')
+        const passwordInput = document.querySelector('#inputSignupPassWord')
+        const emailInput = document.querySelector('#inputSignupEmail')
+        const nameInput = document.querySelector('#inputSignupName')
+        if (emailInput.classList.contains('is-invalid')) {
+            emailInput.focus()
+            return
+        }
+        if (nameInput.classList.contains('is-invalid')) {
+            nameInput.focus()
+            return
+        }
+        if (passwordInput.classList.contains('is-invalid')) {
+            passwordInput.focus()
+            return
+        }
+        if (passwordConfirmInput.classList.contains('is-invalid')) {
+            passwordConfirmInput.focus()
+            return
+        }
+        const email = emailInput.value.trim()
+        const name = nameInput.value.trim()
+        const password = passwordInput.value.trim()
+        const passwordConfirm = passwordConfirmInput.value.trim()
         try {
             await signup({ email, name, password, passwordConfirm })
             await getUserFromLocalStorage()
@@ -730,7 +788,6 @@ const addHandlerLogOut = () => {
             showToast('Bạn đã đăng xuất', 'info')
             g_listWord = []
             g_listHistoryPlay = []
-            console.log(document.cookie)
             renderLoginClick()
             renderOptionLogin()
             renderInitPage()
@@ -743,6 +800,7 @@ const addHandlerLogOut = () => {
         }
     })
 }
+// ============= ACCOUNT =====================
 // OK
 const addHandlerRenderListGame = () => {
     document.querySelector('.js-list-game').addEventListener('click', (e) => {
