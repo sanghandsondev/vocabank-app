@@ -3,7 +3,7 @@
 import { RESULT_PER_PAGE, SECOND_PER_TEST } from './config'
 import { isEmail, isWordUnique, existMaxChar, isEqual, existMinChar } from './utils'
 import { login, logout, signup, updatePassword } from './auth'
-import { showToast, setTimeDisplay } from './custom'
+import { showToast, setTimeDisplay, readImg } from './custom'
 import { async } from 'regenerator-runtime'
 import GameMarkup from './views/gameView'
 import AuthMarkup from './views/authView'
@@ -243,6 +243,7 @@ const renderUserInfo = async () => {
     clear(accountEl)
     await renderView(accountEl, AccountMarkup.userInfoMarkup(g_user))
     //add handler
+    addHandlerUpdateAvatarUser()
     addHandlerSubmitUpdateInfoUser()
     addHandlerFormUpdatePassword()
 }
@@ -253,6 +254,7 @@ const renderFormUpdatePassword = async () => {
     // add handler
     addHandlerSubmitUpdatePassword()
 }
+//
 // OK
 const renderListWordTable = async () => {
     // LOAD LẦN ĐẦU THÔI
@@ -843,6 +845,12 @@ const addHandlerRenderOptionAccount = () => {
     })
 }
 
+const addHandlerUpdateAvatarUser = () => {
+    document.querySelector('#inputAvatarUser').addEventListener('change', (e) => {
+        readImg(e.target, '.user__avatar')
+    })
+}
+
 const addHandlerSubmitUpdateInfoUser = () => {
     document.querySelector('.js-form-user-info').addEventListener('submit', async (e) => {
         e.preventDefault()
@@ -851,9 +859,12 @@ const addHandlerSubmitUpdateInfoUser = () => {
             return
         }
         try {
-            const name = document.querySelector('#inputInfoName').value.trim()
+            const form = new FormData()
+            form.append('name', document.querySelector('#inputInfoName').value.trim())
+            form.append('avatar', document.querySelector('#inputAvatarUser').files[0])
             e.target.querySelector('button').textContent = 'Đang cập nhật ...'
-            await updateInfoCurrentUser({ name })
+            // console.log(avatar)
+            await updateInfoCurrentUser(form)
             await getUserFromLocalStorage()
             renderUserDisplay()
             showToast('Cập nhật thành công', 'success')

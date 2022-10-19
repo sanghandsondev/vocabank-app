@@ -1,4 +1,4 @@
-import { RESULT_PER_PAGE } from '../config'
+import { BACKEND_URL, RESULT_PER_PAGE } from '../config'
 
 class AccountMarkup {
 
@@ -201,6 +201,13 @@ class AccountMarkup {
         return `
         <form class="js-form-user-info">
             <h3 class="mb-3">Tài khoản</h3>
+            <div class="form-group">
+                <label for="inputAvatarUser">
+                    <img src="${BACKEND_URL}img/users/${user.avatar}" alt="avatar" style="border-radius: 50%;
+                        width: 100px; height: 100px; cursor: pointer;" class="user__avatar">
+                </label>
+                <input class="custom-file-input" type="file" accept="image/*" id="inputAvatarUser" hidden>
+            </div>
             <div class="form-group">
                 <label for="inputInfoEmail">Email</label>
                 <input type="text" class="form-control" id="inputInfoEmail"

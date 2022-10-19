@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "../config"
 
 class AuthMarkup {
     optionLoginMarkup() {
@@ -104,6 +105,8 @@ class AuthMarkup {
     <li class="nav-item dropdown mr-5">
         <a class="nav-link dropdown-toggle text-light mr-5" href="#" id="navbarDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="${BACKEND_URL}img/users/${user.avatar}" alt="avatar" style="border-radius: 50%;
+                        width: 30px; height: 30px; margin-right: 4px;">
             ${user.name}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">

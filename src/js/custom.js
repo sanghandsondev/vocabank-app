@@ -36,3 +36,13 @@ export const setTimeDisplay = (timeIn1000Second) => {
 
     // return { hour: textHour, minute: textMinute, second: textSecond }
 }
+
+export const readImg = (input, imgSrc) => {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            document.querySelector(imgSrc).src = e.target.result
+        }
+        reader.readAsDataURL(input.files[0])
+    }
+}

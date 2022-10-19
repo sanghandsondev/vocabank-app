@@ -1,4 +1,4 @@
-import { BACKEND_URL } from './config'
+import { BACKEND_API } from './config'
 import { showToast } from './custom'
 import axios from 'axios'
 import { JWT_COOKIE_EXPIRES_IN } from './config'
@@ -8,7 +8,7 @@ export const login = async (data) => {
     try {
         const res = await axios({
             method: 'POST',
-            url: `${BACKEND_URL}users/login`,
+            url: `${BACKEND_API}users/login`,
             data
         })
         // console.log(res.data.token)
@@ -28,7 +28,7 @@ export const signup = async (data) => {
     try {
         const res = await axios({
             method: 'POST',
-            url: `${BACKEND_URL}users/signup`,
+            url: `${BACKEND_API}users/signup`,
             data
         })
         // console.log(res.data.token)
@@ -46,7 +46,7 @@ export const logout = async () => {
         // console.log(document.cookie.split('=')[1])
         const res = await axios({
             method: 'GET',
-            url: `${BACKEND_URL}users/logout`,
+            url: `${BACKEND_API}users/logout`,
             headers: {
                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
             }
@@ -66,7 +66,7 @@ export const updatePassword = async (data) => {
     try {
         const res = await axios({
             method: 'PATCH',
-            url: `${BACKEND_URL}users/updateMyPassword`,
+            url: `${BACKEND_API}users/updateMyPassword`,
             headers: {
                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
             },
