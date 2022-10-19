@@ -683,6 +683,13 @@ const addHandlerRenderOptionLogin = () => {
     btnLoginwithEmail.addEventListener('click', () => {
         renderLoginWithEmail()
     })
+    btnLoginwithFacebook.addEventListener('click', () => {
+        showToast('Tính năng đang phát triển. Vui lòng thử lại sau!', 'info')
+    })
+    btnLoginwithGoogle.addEventListener('click', () => {
+        showToast('Tính năng đang phát triển. Vui lòng thử lại sau!', 'info')
+    })
+
 }
 // OK
 const addHandlerRenderSignup = () => {
