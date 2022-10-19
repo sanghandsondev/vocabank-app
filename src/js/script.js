@@ -1,9 +1,8 @@
 // import 'core-js/stable'                     // polyfilling everything else
 // import '@babel/polyfill'
-// import 'regenerator-runtime/runtime'        // polyfilling async/await
 import { RESULT_PER_PAGE, SECOND_PER_TEST } from './config'
 import { isEmail, isWordUnique, existMaxChar, isEqual, existMinChar } from './utils'
-import { login, logout, signup } from './auth'
+import { login, logout, signup, updatePassword } from './auth'
 import { showToast, setTimeDisplay } from './custom'
 import { async } from 'regenerator-runtime'
 import GameMarkup from './views/gameView'
@@ -11,7 +10,7 @@ import AuthMarkup from './views/authView'
 import AccountMarkup from './views/accountView'
 import AdminMarkup from './views/adminView'
 import MainMarkup from './views/mainView'
-import { getAllWordByCurrentUser, getAllGames, addWord, removeWord, updateWord, addHistory, getHistoryOfCurrentUser } from './data'
+import { updateInfoCurrentUser, getAllWordByCurrentUser, getAllGames, addWord, removeWord, updateWord, addHistory, getHistoryOfCurrentUser } from './data'
 
 // const app = document.querySelector('.js-app')
 const headerEl = document.querySelector('.js-header')
@@ -21,8 +20,8 @@ const accountEl = document.querySelector('.js-account')
 const userEl = document.querySelector('.js-user')
 
 // LOCAL MODAL STATE
-let g_listWord = []
 let g_user
+let g_listWord = []
 let g_listHistoryPlay = []
 let g_listGame = []
 
@@ -229,10 +228,7 @@ const renderUserDisplay = async () => {
     await renderView(userEl, AuthMarkup.userDisplayMarkup(g_user))
     // add handler
     addHandlerLogOut()
-    addHandlerRenderListGame()
-    addHandlerRenderListHistoryPlay()
-    addHandlerRenderListWordTable()
-    addHandlerRenderAdminPage()
+    addHandlerRenderOptionAccount()
 }
 // OK
 const renderLoginClick = async () => {
@@ -240,6 +236,21 @@ const renderLoginClick = async () => {
     await renderView(userEl, AuthMarkup.loginClickMarkup())
     //add handler
     addHandlerClickLogIn()
+}
+// 
+const renderUserInfo = async () => {
+    clear(accountEl)
+    await renderView(accountEl, AccountMarkup.userInfoMarkup(g_user))
+    //add handler
+    addHandlerSubmitUpdateInfoUser()
+    addHandlerFormUpdatePassword()
+}
+
+const renderFormUpdatePassword = async () => {
+    clear(accountEl)
+    await renderView(accountEl, AccountMarkup.updatePasswordMarkup())
+    // add handler
+    addHandlerSubmitUpdatePassword()
 }
 // OK
 const renderListWordTable = async () => {
@@ -284,7 +295,7 @@ const renderListHistoryPlay = async () => {
 }
 
 //--------------Admin ----------------------
-// OK
+// Updating ...
 const renderInitAdminPage = () => {
     // clear(headerEl)
     clear(contentEl)
@@ -294,7 +305,7 @@ const renderInitAdminPage = () => {
 }
 
 // ------------------------- ADD HANDLER -------------------------------
-// Init Page Load
+// Init Page Load ====
 // OK
 const addHandlerClickOptionGame = async () => {
     const btnGame1 = document.querySelector('.js-game-1')
@@ -685,6 +696,7 @@ const addHandlerClickLogIn = () => {
         renderOptionLogin()
     })
 }
+// OK
 const addHandlerValidateFormSignup = () => {
     const inputEmail = document.querySelector('#inputSignupEmail')
     const inputName = document.querySelector('#inputSignupName')
@@ -751,12 +763,14 @@ const addHandlerSubmitSignup = () => {
         const password = passwordInput.value.trim()
         const passwordConfirm = passwordConfirmInput.value.trim()
         try {
+            document.querySelector('.js-form-signup button').innerText = 'Đăng ký...'
             await signup({ email, name, password, passwordConfirm })
             await getUserFromLocalStorage()
             showToast('Đăng ký tài khoản thành công.', 'success')
             renderUserDisplay()
-            renderListHistoryPlay()
+            clear(accountEl)
         } catch (err) {
+            document.querySelector('.js-form-signup button').innerText = 'Đăng ký'
             showToast(err, 'danger')
         }
 
@@ -800,35 +814,112 @@ const addHandlerLogOut = () => {
         }
     })
 }
-// ============= ACCOUNT =====================
-// OK
-const addHandlerRenderListGame = () => {
+// ============= ACCOUNT + FIRST RENDER =====================
+const addHandlerRenderOptionAccount = () => {
+    document.querySelector('.js-user-info').addEventListener('click', (e) => {
+        renderUserInfo()
+    })
     document.querySelector('.js-list-game').addEventListener('click', (e) => {
         renderInitPage()
     })
-}
-// OK
-const addHandlerRenderListWordTable = () => {
     document.querySelector('.js-user-vocab').addEventListener('click', () => {
         renderListWordTable()
     })
-}
-// OK
-const addHandlerRenderAdminPage = () => {
     window.addEventListener('hashchange', () => {
         if (location.hash.slice(1) === "admin123123123") {
             renderInitAdminPage()
         }
     })
-}
-// OK
-const addHandlerRenderListHistoryPlay = () => {
     document.querySelector('.js-user-history-play').addEventListener('click', () => {
         renderListHistoryPlay()
     })
 }
 
-// List word table
+const addHandlerSubmitUpdateInfoUser = () => {
+    document.querySelector('.js-form-user-info').addEventListener('submit', async (e) => {
+        e.preventDefault()
+        if (document.querySelector('#inputInfoName').classList.contains('is-invalid')) {
+            document.querySelector('#inputInfoName').focus()
+            return
+        }
+        try {
+            const name = document.querySelector('#inputInfoName').value.trim()
+            e.target.querySelector('button').textContent = 'Đang cập nhật ...'
+            await updateInfoCurrentUser({ name })
+            await getUserFromLocalStorage()
+            renderUserDisplay()
+            showToast('Cập nhật thành công', 'success')
+            e.target.querySelector('button').textContent = 'Cập nhật'
+        } catch (err) {
+            showToast(err, 'danger')
+            e.target.querySelector('button').textContent = 'Cập nhật'
+
+        }
+    })
+    //---------------- validate ------------
+    document.querySelector('#inputInfoName').addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+    })
+    document.querySelector('#inputInfoName').addEventListener('blur', (e) => {
+        if (!existMinChar(e.target.value.trim(), 4) || !existMaxChar(e.target.value.trim(), 30)) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+}
+
+const addHandlerFormUpdatePassword = () => {
+    document.querySelector('.js-update-password').addEventListener('click', (e) => {
+        renderFormUpdatePassword()
+    })
+}
+
+const addHandlerSubmitUpdatePassword = () => {
+    const inputPassword = document.querySelector('#inputNewPassWord')
+    const inputPasswordConf = document.querySelector('#inputNewPassWordConfirm')
+    document.querySelector('.js-form-update-password').addEventListener('submit', async (e) => {
+        e.preventDefault()
+        if (inputPassword.classList.contains('is-invalid')) {
+            inputPassword.focus()
+            return
+        }
+        if (inputPasswordConf.classList.contains('is-invalid')) {
+            inputPasswordConf.focus()
+            return
+        }
+        try {
+            e.target.querySelector('button').textContent = 'Đang cập nhật ...'
+            const data = {
+                passwordCurrent: document.querySelector('#inputCurrentPassword').value.trim(),
+                password: inputPassword.value.trim(),
+                passwordConfirm: inputPasswordConf.value.trim(),
+            }
+            await updatePassword(data)
+            showToast('Cập nhật thành công', 'success')
+            renderUserInfo()
+        } catch (err) {
+            showToast(err, 'danger')
+            renderFormUpdatePassword()
+        }
+    })
+    // ---- validate ----
+    inputPassword.addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+    })
+    inputPassword.addEventListener('blur', (e) => {
+        if (!existMinChar(e.target.value, 6)) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+    inputPasswordConf.addEventListener('input', (e) => {
+        e.target.classList.remove('is-invalid')
+        if (!isEqual(e.target.value, inputPassword.value)) {
+            e.target.classList.add('is-invalid')
+        }
+    })
+
+}
+
+// List word table ------------------
 // OK
 const addHandlerRenderAddWordInput = () => {
     document.querySelector('.js-btn-add-word').addEventListener('click', (e) => {
@@ -1113,7 +1204,7 @@ const addHandlerPaginatePage = () => {
     })
 }
 
-// All history play table
+// List history table ---------------------
 
 
 // --------------------------- INIT -------------------------
@@ -1125,6 +1216,6 @@ const init = async () => {
         renderUserDisplay()
     }
     renderInitPage()
-    // await getListWord()   
+
 }
 init()

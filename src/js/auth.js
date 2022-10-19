@@ -2,6 +2,7 @@ import { BACKEND_URL } from './config'
 import { showToast } from './custom'
 import axios from 'axios'
 import { JWT_COOKIE_EXPIRES_IN } from './config'
+import { async } from 'regenerator-runtime'
 
 export const login = async (data) => {
     try {
@@ -58,5 +59,24 @@ export const logout = async () => {
         // showToast(err.response.data.message, 'danger')
         throw err.response.data.message
 
+    }
+}
+
+export const updatePassword = async (data) => {
+    try {
+        const res = await axios({
+            method: 'PATCH',
+            url: `${BACKEND_URL}users/updateMyPassword`,
+            headers: {
+                'authorization': `Bearer ${document.cookie.split('=')[1]}`
+            },
+            data
+        })
+        if (res.data.status === "success") {
+            document.cookie = `jwt=${res.data.token}; expires=${new Date(Date.now() + JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000)}`;
+            localStorage.setItem('user', JSON.stringify(res.data.data.user))
+        }
+    } catch (err) {
+        throw err.response.data.message
     }
 }

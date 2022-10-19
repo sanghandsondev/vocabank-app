@@ -117,17 +117,20 @@ export const getHistoryOfCurrentUser = async () => {
     }
 }
 
-// export const getHistoryOfAGame = async (gameId) => {
-//     try {
-//         const res = await axios({
-//             method: 'GET',
-//             url: `${BACKEND_URL}games/${gameId}/histories`,
-//             headers: {
-//                 'authorization': `Bearer ${document.cookie.split('=')[1]}`
-//             }
-//         })
-//         return res.data.data.histories
-//     } catch (err) {
-//         throw err.response.data.message
-//     }
-// }
+export const updateInfoCurrentUser = async (data) => {
+    try {
+        const res = await axios({
+            method: 'PATCH',
+            url: `${BACKEND_URL}users/updateMe`,
+            headers: {
+                'authorization': `Bearer ${document.cookie.split('=')[1]}`
+            },
+            data
+        })
+        if (res.data.status === "success") {
+            localStorage.setItem('user', JSON.stringify(res.data.data.user))
+        }
+    } catch (err) {
+        throw err.response.data.message
+    }
+}

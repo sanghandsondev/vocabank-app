@@ -197,7 +197,65 @@ class AccountMarkup {
         return ''
     }
 
+    userInfoMarkup(user) {
+        return `
+        <form class="js-form-user-info">
+            <h3 class="mb-3">Tài khoản</h3>
+            <div class="form-group">
+                <label for="inputInfoEmail">Email</label>
+                <input type="text" class="form-control" id="inputInfoEmail"
+                    aria-describedby="inputInfoEmailHelp" placeholder="Địa chỉ email..."
+                    autocomplete="off" value="${user.email}" disabled>
+                <div class="invalid-feedback">
+                    Trường này phải nhập một email.
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputInfoName">Họ và Tên</label>
+                <input type="text" class="form-control" id="inputInfoName"
+                    aria-describedby="inputInfoNameHelp" placeholder="Họ và tên của bạn..."
+                    autocomplete="off" value="${user.name}">
+                <div class="invalid-feedback">
+                    Trường này nhập ít nhất 4 ký tự, tối đa 30 kí tự.
+                </div>
+            </div>
+            <p class="text-secondary">Đổi mật khẩu?
+                <a href="#" class="text-dark js-update-password">Click here</a>
+            </p>
+            <button type="submit" class="btn btn-primary btn-block">Cập nhật</button>
+        </form>
+        `
+    }
 
+    updatePasswordMarkup() {
+        return `
+        <form class="js-form-update-password">
+            <h3 class="mb-3">Cập nhật mật khẩu</h3>
+            <div class="form-group">
+                <label for="inputCurrentPassword">Mật khẩu hiện tại</label>
+                <input type="password" class="form-control" id="inputCurrentPassword"
+                     placeholder="******" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="inputNewPassWord">Mật khẩu mới</label>
+                <input type="password" class="form-control" id="inputNewPassWord"
+                     placeholder="******" autocomplete="off">
+                <div class="invalid-feedback">
+                    Mật khẩu cần ít nhất 6 ký tự.
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputNewPassWordConfirm">Xác nhận mật khẩu</label>
+                <input type="password" class="form-control" id="inputNewPassWordConfirm"
+                     placeholder="******" autocomplete="off">
+                <div class="invalid-feedback">
+                    Mật khẩu không trùng khớp.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Cập nhật</button>
+        </form>
+        `
+    }
 }
 
 export default new AccountMarkup()
