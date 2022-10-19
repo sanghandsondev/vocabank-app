@@ -54,10 +54,11 @@ const getListWord = async () => {
 }
 
 const getUserFromLocalStorage = async () => {
-    // const token = document.cookie.jwt
-    // console.log(token)
+    if (!document.cookie) {
+        localStorage.removeItem('user')
+    }
     const user = await localStorage.getItem('user')
-    if (!user) g_user = {}
+    if (!user) g_user = undefined
     g_user = JSON.parse(user)
 }
 
