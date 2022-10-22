@@ -477,6 +477,7 @@ const addHandlerSubmitTimeTestForm2 = () => {
 const addHandlerInputWordGame1 = () => {
     document.querySelector('#inputWordGame1').addEventListener('input', (e) => {
         e.target.classList.remove('is-invalid')
+        e.target.value = e.target.value.toLowerCase()
     })
 }
 // OK
@@ -863,7 +864,7 @@ const addHandlerSubmitUpdateInfoUser = () => {
             form.append('name', document.querySelector('#inputInfoName').value.trim())
             form.append('avatar', document.querySelector('#inputAvatarUser').files[0])
             e.target.querySelector('button').textContent = 'Đang cập nhật ...'
-            // console.log(avatar)
+            console.log(form)
             await updateInfoCurrentUser(form)
             await getUserFromLocalStorage()
             renderUserDisplay()
