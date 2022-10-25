@@ -533,7 +533,7 @@ const addHandlerSubmitTimeTestForm3 = () => {
         g_timeTest = timeTest
         g_timeSuggest = 0
         g_timeLive = 1
-        g_timeOut = (timeTest * 40 * 1000)
+        g_timeOut = (timeTest * SECOND_PER_TEST * 1000)
         const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
         setTimeDisplay(g_timeOut)
         const myTimer = setInterval(() => {
