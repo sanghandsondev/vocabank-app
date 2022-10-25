@@ -39,7 +39,7 @@ class GameMarkup {
         
         <div class="js-time-game hidden"> 
             <button type="button" class="btn btn-outline-primary js-time-test-display" disabled>
-                Luợt kiểm tra:
+                Từ kiểm tra:
                 <span class=" font-weight-bold"></span>
             </button>
 
@@ -105,7 +105,7 @@ class GameMarkup {
         const random = Math.floor(Math.random() * length)
         const question = list[random].meaning
         const answer = list[random].name
-        const newList = list.filter((el) => {
+        let newList = list.filter((el) => {
             return el.meaning !== question
         })
         // Choose 3 fake answer
@@ -144,6 +144,43 @@ class GameMarkup {
                      
                 <button id="${random}" type="submit" class="btn btn-primary mt-3 ml-3 js-btn-check-answer" >Kiểm tra đáp án</button>
             </form>
+        `
+    }
+
+    game3ContentMarkup(list, number) {
+        let gameList = []
+        let randomWord
+        let newList = []
+        list.forEach(element => {
+            newList.push(element)
+        });
+        for (let i = 0; i < number; i++) {
+            randomWord = Math.floor(Math.random() * newList.length)
+            gameList.push(newList[randomWord].name)
+            gameList.push(newList[randomWord].meaning)
+            newList.splice(randomWord, 1)
+        }
+        // console.log(gameList)
+        let randomLocation
+        let gameListRandom = []
+        const length = gameList.length
+        for (let i = 0; i < length; i++) {
+            randomLocation = Math.floor(Math.random() * gameList.length)
+            gameListRandom.push(gameList[randomLocation])
+            gameList.splice(randomLocation, 1)
+        }
+        // console.log(gameListRandom)
+        const markup = gameListRandom.map((el) => {
+            return `
+            <button type="button" class="btn btn-outline-primary mt-1" style="width:24%;height:50px;overflow: hidden;user-select: none;">
+                    <span class="hidden">${el}</span>
+            </button>
+            `
+        }).join('')
+        return `
+            <div class="mt-2 js-list-answer-game3" style="user-select: none;">
+                ${markup}
+            </div>
         `
     }
 }
