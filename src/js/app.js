@@ -144,6 +144,15 @@ const renderView = (parentElement, markup) => {
     parentElement.insertAdjacentHTML('afterbegin', markup)
 }
 
+// ROUTER
+
+window.addEventListener('hashchange', () => {
+    if (location.hash.slice(1) === "/admin123123123") {
+        renderInitAdminPage()
+    }
+})
+
+
 // ----------------------- RENDER VIEW-----------------------------
 // MAIN ------------
 const renderInitPage = async () => {
@@ -380,6 +389,7 @@ const addHandlerClickOptionGame = async () => {
         renderGame3()
     })
 }
+
 
 //============= GAME =================
 // OK
@@ -1039,11 +1049,6 @@ const addHandlerRenderOptionAccount = () => {
     document.querySelector('.js-user-vocab').addEventListener('click', () => {
         renderListWordTable()
     })
-    window.addEventListener('hashchange', () => {
-        if (location.hash.slice(1) === "admin123123123") {
-            renderInitAdminPage()
-        }
-    })
     document.querySelector('.js-user-history-play').addEventListener('click', () => {
         renderListHistoryPlay()
     })
@@ -1438,6 +1443,6 @@ const init = async () => {
         renderUserDisplay()
     }
     renderInitPage()
-
+    router()
 }
 init()

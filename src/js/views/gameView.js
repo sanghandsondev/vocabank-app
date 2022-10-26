@@ -31,7 +31,6 @@ class GameMarkup {
 
 
         return `
-        <h3 >Trò chơi </h3>
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
             Bắt đầu trò chơi
         </button>
@@ -170,7 +169,7 @@ class GameMarkup {
         // console.log(gameListRandom)
         const markup = gameListRandom.map((el) => {
             return `
-            <button type="button" class="btn btn-outline-primary mt-1" style="width:24%;height:50px;overflow: hidden;user-select: none;">
+            <button type="button" class="btn btn-outline-primary mt-1" style="width:24%;height:56px;overflow: hidden;user-select: none;">
                     <span class="hidden">${el}</span>
             </button>
             `

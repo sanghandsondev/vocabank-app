@@ -5,3 +5,6 @@ export const BACKEND_URL = `https://vocabank-api.herokuapp.com/`
 export const JWT_COOKIE_EXPIRES_IN = 30
 
 export const SECOND_PER_TEST = 15
+
+
+

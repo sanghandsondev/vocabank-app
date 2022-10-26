@@ -100,7 +100,7 @@ class AuthMarkup {
     }
 
     userDisplayMarkup(user) {
-        const linkAdminPage = (user.role === "admin" || user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" href="#admin123123123">Trang Admin</a>` : ''
+        const linkAdminPage = (user.role === "admin" || user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" href="#/admin123123123">Trang Admin</a>` : ''
         return `
     <li class="nav-item dropdown mr-5">
         <a class="nav-link dropdown-toggle text-light mr-5" href="#" id="navbarDropdown" role="button"
