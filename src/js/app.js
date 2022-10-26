@@ -384,7 +384,8 @@ const addHandlerClickOptionGame = async () => {
 //============= GAME =================
 // OK
 const addHandlerFocusTimeTestInput = () => {
-    $('#timeTestModal').modal('show')
+    // $('#timeTestModal').modal('show')
+    document.querySelector('.js-btn-start-game').click()
     document.querySelector('#timeTestModal').addEventListener('click', (e) => {
         document.querySelector('#inputTimeTest').focus()
     })
@@ -442,7 +443,7 @@ const addHandlerSubmitTimeTestForm1 = () => {
 
         $('#timeTestModal').modal('hide')
         document.querySelector('.js-time-game').classList.remove('hidden')
-        // document.querySelector('.js-btn-start-game').classList.add('hidden')
+        document.querySelector('.js-btn-start-game').classList.add('hidden')
         document.querySelector('.js-time-test-display span').textContent = g_timeTest
         document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
         document.querySelector('.js-time-live-display span').textContent = g_timeLive
@@ -500,7 +501,7 @@ const addHandlerSubmitTimeTestForm2 = () => {
 
         $('#timeTestModal').modal('hide')
         document.querySelector('.js-time-game').classList.remove('hidden')
-        // document.querySelector('.js-btn-start-game').classList.add('hidden')
+        document.querySelector('.js-btn-start-game').classList.add('hidden')
         document.querySelector('.js-time-test-display span').textContent = g_timeTest
         document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
         document.querySelector('.js-time-live-display span').textContent = g_timeLive
@@ -561,7 +562,7 @@ const addHandlerSubmitTimeTestForm3 = () => {
 
         $('#timeTestModal').modal('hide')
         document.querySelector('.js-time-game').classList.remove('hidden')
-        // document.querySelector('.js-btn-start-game').classList.add('hidden')
+        document.querySelector('.js-btn-start-game').classList.add('hidden')
         document.querySelector('.js-time-test-display span').textContent = g_timeTest
         document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
         document.querySelector('.js-time-live-display span').textContent = g_timeLive

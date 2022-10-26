@@ -29,11 +29,12 @@ class GameMarkup {
 
     gameMarkup() {
 
-        // <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
-        //     Bắt đầu trò chơi
-        // </button>
+
         return `
         <h3 >Trò chơi </h3>
+        <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
+            Bắt đầu trò chơi
+        </button>
         <div class="js-time-game hidden"> 
             <button type="button" class="btn btn-outline-primary js-time-test-display" disabled>
                 Từ kiểm tra:
