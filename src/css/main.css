@@ -19,6 +19,18 @@
     /* Tránh bug không giới hạn số dòng được do trình duyệt */
 }
 
+.fix-line-list-note-game {
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    /* số dòng hiển thị */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    visibility: visible;
+}
+
 /* F0F2F5 */
 /* HEADER */
 
@@ -61,10 +73,12 @@
     cursor: pointer;
 }
 
+.account,
 .main {
     max-height: 85vh;
     overflow-y: auto;
 }
+
 
 .table__list-history {
     font-size: 0.9rem;

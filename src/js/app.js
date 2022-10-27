@@ -147,11 +147,18 @@ const renderView = (parentElement, markup) => {
 // ROUTER
 
 window.addEventListener('hashchange', () => {
-    if (location.hash.slice(1) === "/admin123123123") {
+    if (location.hash.slice(1) === "/admin") {
+        if (!g_user) {
+            showToast('Bạn cần đăng nhập để truy cập.', 'warning')
+            return
+        }
+        if (g_user && g_user.role === 'user') {
+            showToast('Bạn không có quyền truy cập.', 'danger')
+            return
+        }
         renderInitAdminPage()
     }
 })
-
 
 // ----------------------- RENDER VIEW-----------------------------
 // MAIN ------------
@@ -166,8 +173,11 @@ const renderInitPage = async () => {
 
 const renderGame1 = async () => {
     clear(mainEl)
+    clear(userEl)
+    clear(accountEl)
     renderSpinner(mainEl)
     await renderView(mainEl, GameMarkup.gameMarkup())
+    await renderView(accountEl, GameMarkup.noteGameMarkup())
     // add handler here for game 1 view
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm1()
@@ -186,9 +196,13 @@ const renderGame1Content = async () => {
 }
 
 const renderGame2 = async () => {
+    clear(userEl)
+    clear(accountEl)
     clear(mainEl)
     renderSpinner(mainEl)
     await renderView(mainEl, GameMarkup.gameMarkup())
+    await renderView(accountEl, GameMarkup.noteGameMarkup())
+
     // add handler
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm2()
@@ -206,9 +220,13 @@ const renderGame2Content = async () => {
 }
 
 const renderGame3 = async () => {
+    clear(userEl)
+    clear(accountEl)
     clear(mainEl)
     renderSpinner(mainEl)
     await renderView(mainEl, GameMarkup.gameMarkup())
+    await renderView(accountEl, GameMarkup.noteGameMarkup())
+
     // add handler
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm3()
@@ -352,8 +370,6 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         g_gameId = btnGame1.getAttribute('id')
-        clear(userEl)
-        clear(accountEl)
         renderGame1()
     })
 
@@ -368,8 +384,6 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         g_gameId = btnGame2.getAttribute('id')
-        clear(userEl)
-        clear(accountEl)
         renderGame2()
     })
 
@@ -384,8 +398,6 @@ const addHandlerClickOptionGame = async () => {
             return
         }
         g_gameId = btnGame3.getAttribute('id')
-        clear(userEl)
-        clear(accountEl)
         renderGame3()
     })
 }
@@ -817,13 +829,13 @@ const addHandlerSelectGame3 = () => {
                 btn.classList.remove("btn-outline-primary")
                 btn.classList.add("btn-primary")
                 // XỬ LÝ SO SÁNH KẾT QUẢ BTN vs CURRENT
-                const btn1 = current.firstElementChild.innerText
-                const btn2 = btn.firstElementChild.innerText
+                const btn1Value = current.firstElementChild.innerText
+                const btn2Value = btn.firstElementChild.innerText
                 const listRight = g_listWord.filter((el) => {
-                    return el.meaning === btn1
+                    return el.meaning === btn1Value
                 })
                 const listRight2 = g_listWord.filter((el) => {
-                    return el.name === btn1
+                    return el.name === btn1Value
                 })
                 const listRightName = listRight.map((el) => {
                     return el.name
@@ -831,7 +843,7 @@ const addHandlerSelectGame3 = () => {
                 const listRightMeaning = listRight2.map((el) => {
                     return el.meaning
                 })
-                if (listRightName.includes(btn2) || listRightMeaning.includes(btn2)) {
+                if (listRightName.includes(btn2Value) || listRightMeaning.includes(btn2Value)) {
                     // RIGHT
                     setTimeout(async () => {
                         btn.outerHTML = `
@@ -846,6 +858,13 @@ const addHandlerSelectGame3 = () => {
                             
                         </button>
                         `
+                        // const noteEl = document.querySelector('js-list-note-game')
+                        let pp = document.createElement('p')
+                        pp.classList.add('fix-line-list-note-game')
+                        pp.innerHTML = `
+                            - ${btn1Value}  (${btn2Value})
+                        `
+                        document.querySelector('.js-list-note-game').appendChild(pp)
                         btns = document.querySelectorAll('.js-list-answer-game3 button')
                         let check = true
                         for (let btnn of btns) {
@@ -1443,6 +1462,5 @@ const init = async () => {
         renderUserDisplay()
     }
     renderInitPage()
-    router()
 }
 init()

@@ -65,6 +65,14 @@ class GameMarkup {
     `
     }
 
+    noteGameMarkup() {
+        return `
+            <div class="mx-3 js-list-note-game">
+                
+            </div>
+        `
+    }
+
     game1ContentMarkup(list) {
         const length = list.length
         const random = Math.floor(Math.random() * length)
