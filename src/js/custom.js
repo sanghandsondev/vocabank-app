@@ -46,3 +46,12 @@ export const readImg = (input, imgSrc) => {
         reader.readAsDataURL(input.files[0])
     }
 }
+
+export const addNoteWordInGame = (firstEl, secondEl) => {
+    let pp = document.createElement('p')
+    pp.classList.add('fix-line-list-note-game')
+    pp.innerHTML = `
+            - ${firstEl} : ${secondEl}
+            `
+    document.querySelector('.js-list-note-game').appendChild(pp)
+}

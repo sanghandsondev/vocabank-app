@@ -64,10 +64,16 @@ class GameMarkup {
 
     `
     }
-
+    // let pp = document.createElement('p')
+    // pp.classList.add('fix-line-list-note-game')
+    // pp.innerHTML = `
+    //     - ${btn1Value} : ${btn2Value}
+    // `
+    // document.querySelector('.js-list-note-game').appendChild(pp)
     noteGameMarkup() {
         return `
             <div class="mx-3 js-list-note-game">
+            <h4 class="text-center"> Note </h4>
                 
             </div>
         `

@@ -3,7 +3,7 @@
 import { RESULT_PER_PAGE, SECOND_PER_TEST } from './config'
 import { isEmail, isWordUnique, existMaxChar, isEqual, existMinChar } from './utils'
 import { login, logout, signup, updatePassword } from './auth'
-import { showToast, setTimeDisplay, readImg } from './custom'
+import { showToast, setTimeDisplay, readImg, addNoteWordInGame } from './custom'
 import { async } from 'regenerator-runtime'
 import GameMarkup from './views/gameView'
 import AuthMarkup from './views/authView'
@@ -698,6 +698,9 @@ const addHandlerSuggestWord = () => {
             return `${el.name}`
         }).join(' / ')
         g_timeSuggest--
+        addNoteWordInGame(meaning, listSuggest.map((el) => {
+            return `${el.name}`
+        }).join(' / '))
         document.querySelector('.js-time-suggest-display span').innerText = g_timeSuggest
         document.querySelector('.js-time-suggest-display').classList.remove('btn-outline-primary')
         document.querySelector('.js-time-suggest-display').classList.add('btn-warning')
@@ -859,12 +862,7 @@ const addHandlerSelectGame3 = () => {
                         </button>
                         `
                         // const noteEl = document.querySelector('js-list-note-game')
-                        let pp = document.createElement('p')
-                        pp.classList.add('fix-line-list-note-game')
-                        pp.innerHTML = `
-                            - ${btn1Value}  (${btn2Value})
-                        `
-                        document.querySelector('.js-list-note-game').appendChild(pp)
+                        addNoteWordInGame(btn1Value, btn2Value)
                         btns = document.querySelectorAll('.js-list-answer-game3 button')
                         let check = true
                         for (let btnn of btns) {
