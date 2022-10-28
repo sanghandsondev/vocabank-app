@@ -64,17 +64,14 @@ class GameMarkup {
 
     `
     }
-    // let pp = document.createElement('p')
-    // pp.classList.add('fix-line-list-note-game')
-    // pp.innerHTML = `
-    //     - ${btn1Value} : ${btn2Value}
-    // `
-    // document.querySelector('.js-list-note-game').appendChild(pp)
+
     noteGameMarkup() {
         return `
-            <div class="mx-3 js-list-note-game">
-            <h4 class="text-center"> Note </h4>
-                
+            <div class="list__note-game border border-primary ">
+                <h3 class="text-center text-primary border-bottom border-primary"> Note </h3>
+                <div class="mx-3 js-list-note-game" style="max-height:72vh;overflow-y: auto;">
+                    
+                </div>
             </div>
         `
     }

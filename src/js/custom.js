@@ -51,7 +51,12 @@ export const addNoteWordInGame = (firstEl, secondEl) => {
     let pp = document.createElement('p')
     pp.classList.add('fix-line-list-note-game')
     pp.innerHTML = `
-            - ${firstEl} : ${secondEl}
+                - ${firstEl} : ${secondEl}
             `
-    document.querySelector('.js-list-note-game').appendChild(pp)
+    // const markup = `
+    //     <p class="fix-line-list-note-game">
+    //         - ${firstEl} : ${secondEl}
+    //     </p>
+    // `
+    document.querySelector('.js-list-note-game').insertAdjacentElement('afterbegin', pp)
 }

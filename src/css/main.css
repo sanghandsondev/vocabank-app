@@ -29,6 +29,7 @@
     text-overflow: ellipsis;
     max-width: 100%;
     visibility: visible;
+    color: #007bff;
 }
 
 /* F0F2F5 */
@@ -56,6 +57,8 @@
 }
 
 
+
+
 /* MAIN  */
 .content {
     padding: 80px 4rem 0 9rem;
@@ -79,6 +82,10 @@
     overflow-y: auto;
 }
 
+.list__note-game {
+    border-radius: 20px;
+    min-height: 80vh;
+}
 
 .table__list-history {
     font-size: 0.9rem;
