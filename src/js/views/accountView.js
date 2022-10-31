@@ -1,4 +1,4 @@
-import { BACKEND_URL, RESULT_PER_PAGE } from '../config'
+import { RESULT_PER_PAGE } from '../config'
 
 class AccountMarkup {
 

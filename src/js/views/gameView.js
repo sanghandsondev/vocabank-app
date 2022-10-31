@@ -1,32 +1,5 @@
 
 class GameMarkup {
-    initpageMarkup(list) {
-        const markup = list.map((el, index) => {
-            return `
-            <div class="col-xl-12 col-sm-12 col-lg-12 mb-3">
-                <div class="card">
-                    <div id="${el._id}" class="js-game-${index + 1}">
-                        <div class="game-intro card-body">
-                            <h5 class="card-title">
-                                ${el.title}
-                                <span class="badge badge-pill badge-${el.difficulty}">${el.status}</span>
-                            </h5>
-                            <p class="card-text">
-                                ${el.description}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `
-        }).join('')
-        return `
-    <div class="row">
-        ${markup}
-    </div>
-    `
-    }
-
     gameMarkup() {
 
 

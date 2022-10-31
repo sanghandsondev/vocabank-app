@@ -100,25 +100,26 @@ class AuthMarkup {
     }
 
     userDisplayMarkup(user) {
-        const linkAdminPage = (user.role === "admin" || user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" href="#/admin">Trang Admin</a>` : ''
+        const linkAdminPage = (user.role === "admin" || user.role === "superadmin") ? `<a class="dropdown-item js-user-admin-page" 
+                href="#/admin">Trang Admin</a>` : ''
         return `
-    <li class="nav-item dropdown mr-5">
-        <a class="nav-link dropdown-toggle text-light mr-5" href="#" id="navbarDropdown" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img src="${BACKEND_URL}img/users/dogg.jpg" alt="avatar" style="border-radius: 50%;
-                        width: 30px; height: 30px; margin-right: 4px;">
-            ${user.name}
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item js-user-info" href="#">Thông tin cá nhân</a>
-            <a class="dropdown-item js-list-game" href="#">Danh sách trò chơi</a>
-            <a class="dropdown-item js-user-history-play" href="#">Lịch sử chơi</a>
-            <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
-            ${linkAdminPage}
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item js-logout" href="#">Đăng xuất</a>
-        </div>
-    </li>
+        <li class="nav-item dropdown mr-5">
+            <a class="nav-link dropdown-toggle text-light mr-5" href="#" id="navbarDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="${BACKEND_URL}img/users/dogg.jpg" alt="avatar" style="border-radius: 50%;
+                            width: 30px; height: 30px; margin-right: 4px;">
+                ${user.name}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item js-user-info" href="#">Thông tin cá nhân</a>
+                <a class="dropdown-item js-list-game" href="#">Danh sách trò chơi</a>
+                <a class="dropdown-item js-user-history-play" href="#">Lịch sử chơi</a>
+                <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
+                ${linkAdminPage}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item js-logout" href="#">Đăng xuất</a>
+            </div>
+        </li>
     `
     }
 

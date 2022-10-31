@@ -166,7 +166,7 @@ const renderInitPage = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
     await getListGame()
-    await renderView(mainEl, GameMarkup.initpageMarkup(g_listGame))
+    await renderView(mainEl, MainMarkup.initpageMarkup(g_listGame))
     // add handler
     addHandlerClickOptionGame()
 }
@@ -335,12 +335,16 @@ const renderUpdatePagination = () => {
 }
 // OK
 const renderListHistoryPlay = async () => {
+    clear(accountEl)
     clear(mainEl)
     renderSpinner(mainEl)
     await getListHistoryOfCurrentUser()
     await renderView(mainEl, MainMarkup.listHistoryPlayMarkup(g_listHistoryPlay))
+    await renderView(accountEl, MainMarkup.filterHistoryPlayMarkup(g_listGame))
     // add handler
+    addHandlerChangeFilterHistory()
 }
+
 
 //--------------Admin ----------------------
 // Updating ...
@@ -546,6 +550,10 @@ const addHandlerSubmitTimeTestForm3 = () => {
         }
         if (timeTest > 18) {
             document.querySelector('#timeTestHelp').textContent = `Tối đa 18 cặp từ.`
+            return false
+        }
+        if (timeTest < 2) {
+            document.querySelector('#timeTestHelp').textContent = `Tối thiểu 2 cặp từ.`
             return false
         }
         if (timeTest > g_listWord.length) {
@@ -1449,7 +1457,75 @@ const addHandlerPaginatePage = () => {
 }
 
 // List history table ---------------------
+const addHandlerChangeFilterHistory = () => {
+    document.querySelector('.js-filter-history-game').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const dateFrom = document.querySelector('#inputDateFromFilter').value
+        const dateTo = document.querySelector('#inputDateToFilter').value
+        if (!dateFrom || !dateTo) {
+            showToast('Bạn cần nhập đầy đủ thời điểm', 'warning')
+            return
+        }
+        const fromArr = dateFrom.split('-')
+        const toArr = dateTo.split('-')
+        const dayFrom = fromArr[2]
+        const monthFrom = fromArr[1]
+        const yearFrom = fromArr[0]
+        const dayTo = toArr[2]
+        const monthTo = toArr[1]
+        const yearTo = toArr[0]
+        if (yearTo < yearFrom) {
+            showToast('Lỗi thời điểm', 'danger')
+            return
+        }
+        if (yearTo === yearFrom) {
+            if (monthTo < monthFrom) {
+                showToast('Lỗi thời điểm', 'danger')
+                return
+            }
+            if (monthTo === monthFrom) {
+                if (dayTo < dayFrom) {
+                    showToast('Lỗi thời điểm', 'danger')
+                    return
+                }
+            }
+        }
+        const newList = g_listHistoryPlay.filter((el) => {
+            // let isOK = true
+            const dateArr = el.dateCompleted.split(',')[0].split('/')
+            const year = dateArr[2]
+            const month = dateArr[0]
+            const day = dateArr[1]
+            if (year < yearFrom || year > yearTo) return false
+            if (year === yearFrom) {
+                if (month < monthFrom) return false
+                if (month === monthFrom) {
+                    if (day < dayFrom) return false
+                }
+            }
+            if (year === yearTo) {
+                if (month > monthTo) return false
+                if (month === monthTo) {
+                    if (day > dayTo) return false
+                }
+            }
+            return true
+        })
+        // console.log(newList)
 
+        const gameId = document.querySelector('#selectGameHistory').value
+        if (gameId === "0") {
+            clear(mainEl)
+            renderView(mainEl, MainMarkup.listHistoryPlayMarkup(newList))
+            return
+        }
+        const newList2 = newList.filter((el) => {
+            return el.game.id === gameId
+        })
+        clear(mainEl)
+        renderView(mainEl, MainMarkup.listHistoryPlayMarkup(newList2))
+    })
+}
 
 // --------------------------- INIT -------------------------
 const init = async () => {
