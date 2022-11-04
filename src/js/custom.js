@@ -60,3 +60,4 @@ export const addNoteWordInGame = (firstEl, secondEl) => {
     // `
     document.querySelector('.js-list-note-game').insertAdjacentElement('afterbegin', pp)
 }
+

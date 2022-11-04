@@ -31,8 +31,9 @@ class MainMarkup {
         if (list.length === 0) {
             return `
             <table class="table table__list-history js-list-history-table">
-                <thead">
+                <thead class="thead-light">
                     <tr>
+                        <th scope="col">STT</th>
                         <th scope="col" class="text-center">Trò chơi</th>
                         <th scope="col" class="text-center">Từ kiểm tra</th>
                         <th scope="col" class="text-center">Ngày hoàn thành</th>
@@ -46,9 +47,12 @@ class MainMarkup {
             </table> 
             `
         }
-        const markupList = list.map((el) => {
+
+        const markupList = list.map((el, index) => {
+            if (index >= 100) return ``
             return `
             <tr>
+                <th scope="row" >${index + 1}</th>
                 <td class="text-${el.game.difficulty} text-center">${el.game.title}</td>
                 <td class="text-center">${el.numberOfTest}/${el.numberOfWord}</td>
                 <td class="text-center">${el.dateCompleted}</td>
@@ -57,8 +61,9 @@ class MainMarkup {
         }).join('')
         return `
         <table class="table table__list-history js-list-history-table">
-            <thead">
+            <thead class="thead-light">
                 <tr>
+                    <th scope="col">STT</th>
                     <th scope="col" class="text-center">Trò chơi</th>
                     <th scope="col" class="text-center">Từ kiểm tra</th>
                     <th scope="col" class="text-center">Ngày hoàn thành</th>

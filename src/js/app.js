@@ -21,9 +21,9 @@ const userEl = document.querySelector('.js-user')
 
 // LOCAL MODAL STATE
 let g_user
-let g_listWord = []
-let g_listHistoryPlay = []
-let g_listGame = []
+let g_listWord
+let g_listHistoryPlay
+let g_listGame
 
 let g_gameId
 let g_numberWordComplete
@@ -35,6 +35,7 @@ let g_timeOut
 
 const getListGame = async () => {
     try {
+        if (g_listGame) return
         const data = await getAllGames()
         if (!data) return
         g_listGame = data
@@ -64,6 +65,7 @@ const getUserFromLocalStorage = async () => {
 
 const getListHistoryOfCurrentUser = async () => {
     try {
+        if (g_listHistoryPlay) return
         const data = await getHistoryOfCurrentUser()
         if (!data) return
         const length = data.length
@@ -1049,8 +1051,8 @@ const addHandlerLogOut = () => {
             await logout()
             await getUserFromLocalStorage()
             showToast('Bạn đã đăng xuất', 'info')
-            g_listWord = []
-            g_listHistoryPlay = []
+            g_listWord = undefined
+            g_listHistoryPlay = undefined
             renderLoginClick()
             renderOptionLogin()
             renderInitPage()
@@ -1529,12 +1531,17 @@ const addHandlerChangeFilterHistory = () => {
 
 // --------------------------- INIT -------------------------
 const init = async () => {
-    await getUserFromLocalStorage()
-    if (!g_user) {
-        renderLoginClick()
-    } else {
-        renderUserDisplay()
+    try {
+        await getUserFromLocalStorage()
+        if (!g_user) {
+            renderLoginClick()
+        } else {
+            renderUserDisplay()
+        }
+        renderInitPage()
     }
-    renderInitPage()
+    catch (err) {
+        showToast(err, 'danger')
+    }
 }
 init()

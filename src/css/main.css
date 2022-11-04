@@ -112,7 +112,7 @@
 #my-toast {
     position: fixed;
     top: 20px;
-    right: 20px;
+    left: 40%;
     z-index: 1500;
 }
 
@@ -134,7 +134,7 @@
 @keyframes slideInLeft {
     from {
         opacity: 0;
-        transform: translateX(calc(100% + 20px));
+        transform: translateX(calc(100% + 50px));
     }
 
     to {
