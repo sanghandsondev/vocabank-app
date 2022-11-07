@@ -111,12 +111,12 @@ class AuthMarkup {
                 ${user.name}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item js-user-info" href="#">Thông tin cá nhân</a>
                 <a class="dropdown-item js-list-game" href="#">Danh sách trò chơi</a>
                 <a class="dropdown-item js-user-history-play" href="#">Lịch sử chơi</a>
                 <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
                 ${linkAdminPage}
                 <div class="dropdown-divider"></div>
+                <a class="dropdown-item js-user-info" href="#">Thông tin cá nhân</a>
                 <a class="dropdown-item js-logout" href="#">Đăng xuất</a>
             </div>
         </li>
