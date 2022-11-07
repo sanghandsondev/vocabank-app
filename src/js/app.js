@@ -171,6 +171,7 @@ const renderInitPage = async () => {
     await renderView(mainEl, MainMarkup.initpageMarkup(g_listGame))
     // add handler
     addHandlerClickOptionGame()
+    addHandlerClickOptionElevator()
 }
 
 const renderGame1 = async () => {
@@ -228,7 +229,6 @@ const renderGame3 = async () => {
     renderSpinner(mainEl)
     await renderView(mainEl, GameMarkup.gameMarkup())
     await renderView(accountEl, GameMarkup.noteGameMarkup())
-
     // add handler
     addHandlerFocusTimeTestInput()
     addHandlerSubmitTimeTestForm3()
@@ -241,6 +241,26 @@ const renderGame3Content = async () => {
     await renderView(contentEle, GameMarkup.game3ContentMarkup(g_listWord, g_numberWordComplete))
     // add handler
     addHandlerSelectGame3()
+}
+
+const renderGame4 = async () => {
+    clear(userEl)
+    clear(accountEl)
+    clear(mainEl)
+    renderSpinner(mainEl)
+    await renderView(mainEl, GameMarkup.gameMarkup())
+    await renderView(accountEl, GameMarkup.noteGameMarkup())
+    // add handler
+    addHandlerFocusTimeTestInput()
+    addHandlerSubmitTimeTestForm4()
+}
+
+const renderGame4Content = async () => {
+    const contentEle = document.querySelector('.js-game-content')
+    clear(contentEle)
+    renderSpinner(contentEle)
+    await renderView(contentEle, GameMarkup.game4ContentMarkup(g_listWord, g_numberWordComplete))
+    // add handler
 }
 
 // ACCOUNT --------------
@@ -365,6 +385,7 @@ const addHandlerClickOptionGame = async () => {
     const btnGame1 = document.querySelector('.js-game-1')
     const btnGame2 = document.querySelector('.js-game-2')
     const btnGame3 = document.querySelector('.js-game-3')
+    const btnGame4 = document.querySelector('.js-game-4')
     btnGame1.addEventListener('click', async () => {
         if (!g_user) {
             showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
@@ -406,8 +427,31 @@ const addHandlerClickOptionGame = async () => {
         g_gameId = btnGame3.getAttribute('id')
         renderGame3()
     })
+    btnGame4.addEventListener('click', async (e) => {
+        if (!g_user) {
+            showToast('Bạn cần đăng nhập để tiếp tục', 'warning')
+            return
+        }
+        await getListWord()
+        if (g_listWord.length < 20) {
+            showToast('Bảng từ vựng cần tối thiểu 20 từ để tham gia trò chơi.', 'warning')
+            return
+        }
+        g_gameId = btnGame4.getAttribute('id')
+        renderGame4()
+    })
 }
 
+const addHandlerClickOptionElevator = async () => {
+    const dictionEl = document.querySelector('.js-show-dictionary')
+
+    dictionEl.addEventListener('click', (e) => {
+        document.querySelector('.js-dictionary-wrapper').style.display = "block";
+    })
+    document.querySelector('.js-dictionary-wrapper i').addEventListener('click', (e) => {
+        document.querySelector('.js-dictionary-wrapper').style.display = "none";
+    })
+}
 
 //============= GAME =================
 // OK
@@ -599,6 +643,72 @@ const addHandlerSubmitTimeTestForm3 = () => {
         document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
         document.querySelector('.js-time-live-display span').textContent = g_timeLive
         renderGame3Content()
+    })
+}
+
+const addHandlerSubmitTimeTestForm4 = () => {
+    document.querySelector('.js-form-time-test').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const timeTest = document.querySelector('#inputTimeTest').value
+        // console.log(timeTest)
+        if (!Number.isInteger(Number(timeTest))) {
+            document.querySelector('#timeTestHelp').textContent = `Bạn cần nhập một số nguyên.`
+            return false
+        }
+        if (timeTest <= 0) {
+            document.querySelector('#timeTestHelp').textContent = `Bạn cần nhập một số nguyên dương.`
+            return false
+        }
+        if (timeTest > 100) {
+            document.querySelector('#timeTestHelp').textContent = `Tối đa 100 từ.`
+            return false
+        }
+        if (timeTest < 10) {
+            document.querySelector('#timeTestHelp').textContent = `Tối thiểu 10 từ.`
+            return false
+        }
+        if (timeTest > g_listWord.length * 1.3) {
+            document.querySelector('#timeTestHelp').textContent = `Số từ kiểm tra cần nhỏ hơn từ vựng của bạn một lượng nhất định.`
+            return false
+        }
+        g_numberWordComplete = timeTest
+        g_timeTest = timeTest
+        g_timeSuggest = 0
+        g_timeLive = 1
+        g_timeOut = (timeTest * SECOND_PER_TEST * 1000)
+        const btnTimeOutDisplay = document.querySelector('.js-time-out-display')
+        setTimeDisplay(g_timeOut)
+        const myTimer = setInterval(() => {
+            setTimeDisplay(g_timeOut)
+
+            if (g_timeOut === 180000) {
+                btnTimeOutDisplay.classList.remove('btn-info')
+                btnTimeOutDisplay.classList.add('btn-warning')
+            }
+            if (g_timeOut === 60000) {
+                btnTimeOutDisplay.classList.remove('btn-info')
+                btnTimeOutDisplay.classList.remove('btn-warning')
+                btnTimeOutDisplay.classList.add('btn-danger')
+            }
+            if (g_timeOut === 0) {
+                // resetLocalGameState()
+                clearInterval(myTimer)
+                showToast('Hết thời gian. Rất tiếc bạn đã không hoàn thành trò chơi.', 'danger')
+                setTimeout(() => {
+                    location.assign('/')
+                }, 4000)
+            }
+            g_timeOut -= 1000
+        }, 1000)
+
+        $('#timeTestModal').modal('hide')
+        document.querySelector('.js-time-game').classList.remove('hidden')
+        document.querySelector('.js-btn-start-game').classList.add('hidden')
+        document.querySelector('.js-time-test-display span').textContent = g_timeTest
+        document.querySelector('.js-time-suggest-display span').textContent = g_timeSuggest
+        document.querySelector('.js-time-live-display span').textContent = g_timeLive
+        renderGame4Content()
+
     })
 }
 // Game 1 -------------

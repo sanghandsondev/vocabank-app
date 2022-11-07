@@ -1,8 +1,6 @@
 
 class GameMarkup {
     gameMarkup() {
-
-
         return `
         <button type="button" class="btn btn-primary js-btn-start-game" data-toggle="modal" data-target="#timeTestModal">
             Bắt đầu trò chơi
@@ -163,6 +161,10 @@ class GameMarkup {
                 ${markup}
             </div>
         `
+    }
+
+    game4ContentMarkup(list, number) {
+        return `hehe`
     }
 }
 
