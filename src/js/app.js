@@ -446,7 +446,12 @@ const addHandlerClickOptionElevator = async () => {
     const dictionEl = document.querySelector('.js-show-dictionary')
 
     dictionEl.addEventListener('click', (e) => {
-        document.querySelector('.js-dictionary-wrapper').style.display = "block";
+        const btn = document.querySelector('.js-dictionary-wrapper')
+        if (btn.style.display === "none") {
+            btn.style.display = "block"
+            return
+        }
+        btn.style.display = "none"
     })
     document.querySelector('.js-dictionary-wrapper i').addEventListener('click', (e) => {
         document.querySelector('.js-dictionary-wrapper').style.display = "none";

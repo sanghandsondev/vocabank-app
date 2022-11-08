@@ -94,7 +94,7 @@ class AuthMarkup {
     loginClickMarkup() {
         return `
     <li class="nav-item mr-5">
-        <a class="nav-link js-login" href="#">Đăng nhập</a>
+        <a class="nav-link btn btn-round btn-block btn-light js-login text-primary" href="#">Đăng nhập</a>
     </li>
     `
     }
@@ -104,14 +104,14 @@ class AuthMarkup {
                 href="#/admin">Trang Admin</a>` : ''
         return `
         <li class="nav-item dropdown mr-5">
-            <a class="nav-link dropdown-toggle text-light mr-5" href="#" id="navbarDropdown" role="button"
+            <a class="nav-link dropdown-toggle text-light pt-0 pb-0" href="#" id="navbarDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="${BACKEND_URL}img/users/dogg.jpg" alt="avatar" style="border-radius: 50%;
-                            width: 30px; height: 30px; margin-right: 4px;">
+                <img src="${BACKEND_URL}img/users/default.jpg" alt="avatar" style="border-radius: 50%;
+                            width: 40px; height: 40px; margin-right: 4px;">
                 ${user.name}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item js-list-game" href="#">Danh sách trò chơi</a>
+                <a class="dropdown-item js-list-game " href="#">Danh sách trò chơi</a>
                 <a class="dropdown-item js-user-history-play" href="#">Lịch sử chơi</a>
                 <a class="dropdown-item js-user-vocab" href="#">Quản lý từ vựng</a>
                 ${linkAdminPage}
