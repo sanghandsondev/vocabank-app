@@ -11,16 +11,16 @@ class GameMarkup {
                 <span class=" font-weight-bold"></span>
             </button>
 
-            <button type="button" class="btn btn-outline-primary ml-5 js-time-suggest-display" disabled>
+            <button type="button" class="btn btn-outline-primary ml-2 js-time-suggest-display" disabled>
                 Lượt gợi ý còn lại:
                 <span class=" font-weight-bold"></span>
             </button>
 
-            <button type="button" class="btn btn-outline-primary ml-5 js-time-live-display" disabled>
+            <button type="button" class="btn btn-outline-primary ml-2 js-time-live-display" disabled>
                 Số mạng còn lại của bạn:
                 <span class=" font-weight-bold"></span>
             </button>
-            <button type="button" class="btn btn-info btn-lg ml-5 js-time-out-display" disabled>
+            <button type="button" class="btn btn-info btn-lg ml-3 js-time-out-display" disabled>
                 <span class="js-hour-display"></span>
                 :
                 <span class="js-minute-display"></span>
