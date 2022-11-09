@@ -86,6 +86,7 @@
 
 .game-intro {
     border: 2px solid white;
+    min-height: 130px;
     /* box-shadow: 0 4px 8px 0 rgb(7 17 27 / 10%); */
 }
 

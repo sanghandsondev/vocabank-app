@@ -1186,6 +1186,7 @@ const addHandlerRenderOptionAccount = () => {
         renderUserInfo()
     })
     document.querySelector('.js-list-game').addEventListener('click', (e) => {
+        clear(accountEl)
         renderInitPage()
     })
     document.querySelector('.js-user-vocab').addEventListener('click', () => {
@@ -1585,12 +1586,12 @@ const addHandlerChangeFilterHistory = () => {
         }
         const fromArr = dateFrom.split('-')
         const toArr = dateTo.split('-')
-        const dayFrom = fromArr[2]
-        const monthFrom = fromArr[1]
-        const yearFrom = fromArr[0]
-        const dayTo = toArr[2]
-        const monthTo = toArr[1]
-        const yearTo = toArr[0]
+        const dayFrom = Number(fromArr[2])
+        const monthFrom = Number(fromArr[1])
+        const yearFrom = Number(fromArr[0])
+        const dayTo = Number(toArr[2])
+        const monthTo = Number(toArr[1])
+        const yearTo = Number(toArr[0])
         if (yearTo < yearFrom) {
             showToast('Lỗi thời điểm', 'danger')
             return
@@ -1610,9 +1611,9 @@ const addHandlerChangeFilterHistory = () => {
         const newList = g_listHistoryPlay.filter((el) => {
             // let isOK = true
             const dateArr = el.dateCompleted.split(',')[0].split('/')
-            const year = dateArr[2]
-            const month = dateArr[0]
-            const day = dateArr[1]
+            const year = Number(dateArr[2])
+            const month = Number(dateArr[0])
+            const day = Number(dateArr[1])
             if (year < yearFrom || year > yearTo) return false
             if (year === yearFrom) {
                 if (month < monthFrom) return false
