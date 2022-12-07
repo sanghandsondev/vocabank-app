@@ -164,7 +164,7 @@ window.addEventListener('hashchange', () => {
 
 // ----------------------- RENDER VIEW-----------------------------
 // MAIN ------------
-const renderInitPage = async () => {
+const renderListGame = async () => {
     clear(mainEl)
     renderSpinner(mainEl)
     await getListGame()
@@ -1170,7 +1170,7 @@ const addHandlerLogOut = () => {
             g_listHistoryPlay = undefined
             renderLoginClick()
             renderOptionLogin()
-            renderInitPage()
+            renderListGame()
         } catch (err) {
             showToast(err, 'danger')
             localStorage.removeItem('user')
@@ -1187,7 +1187,7 @@ const addHandlerRenderOptionAccount = () => {
     })
     document.querySelector('.js-list-game').addEventListener('click', (e) => {
         clear(accountEl)
-        renderInitPage()
+        renderListGame()
     })
     document.querySelector('.js-user-vocab').addEventListener('click', () => {
         renderListWordTable()
@@ -1654,7 +1654,7 @@ const init = async () => {
         } else {
             renderUserDisplay()
         }
-        renderInitPage()
+        renderListGame()
     }
     catch (err) {
         showToast(err, 'danger')
